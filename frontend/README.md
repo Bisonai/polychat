@@ -28,9 +28,11 @@ Get in to the mysql container
 
 ## HOW TO RUN
 
-### 1. Install packages
 
+### 1. Install packages
 ```
+cd frontend
+nvm use
 yarn install
 ```
 

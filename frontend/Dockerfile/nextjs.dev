@@ -1,0 +1,13 @@
+FROM node:16.17.1-alpine3.15
+
+RUN apk add --no-cache libc6-compat curl openssl
+
+WORKDIR /app
+
+COPY package.json .
+
+COPY yarn.lock .
+
+ENV NODE_ENV development
+
+CMD [ "yarn", "dev" ]

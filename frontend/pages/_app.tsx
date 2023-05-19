@@ -7,6 +7,7 @@ import theme from "@src/styles/theme";
 import CssBaseline from "@mui/material/CssBaseline";
 import { PersistGate } from "redux-persist/integration/react";
 import wrapper, { configureStore } from "@redux/store/configureStore";
+import { AfterLogin } from "@src/layouts/AfterLogin";
 
 function MyApp(props: AppProps) {
     const { Component, pageProps } = props;
@@ -20,7 +21,9 @@ function MyApp(props: AppProps) {
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                     <title>Cinder</title>
                 </Head>
-                <Component {...pageProps} />
+                <AfterLogin>
+                    <Component {...pageProps} />
+                </AfterLogin>
             </ThemeProvider>
         </PersistGate>
     );
