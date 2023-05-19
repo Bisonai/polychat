@@ -3,7 +3,7 @@ name: Glitch Cinder Deploy to Amazon ECR
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   ecr_url: public.ecr.aws/bisonai/glitch
