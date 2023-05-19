@@ -1,12 +1,15 @@
 import TopNavigation from "@components/TopNavigation";
 import BottomNavigation from "@components/BottomNavigation";
+import { Grid } from "@mui/material";
 
 export const AfterLogin = ({ children }) => {
     return (
-        <div>
+        <Grid>
             <TopNavigation />
             {children}
-            <BottomNavigation />
-        </div>
+            <Grid sx={{ position: "fixed", bottom: 0, width: "100%" }}>
+                <BottomNavigation />
+            </Grid>
+        </Grid>
     );
 };
