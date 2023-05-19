@@ -77,3 +77,9 @@ export enum IMessageType {
 export interface IUnreadedMessage {
     count: number;
 }
+
+export enum IWalletName {
+    Metamask = "Metamask",
+    Coinbase = "Coinbase",
+    // WalletConnect = "WalletConnect",
+}

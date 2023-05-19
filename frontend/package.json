@@ -66,6 +66,8 @@
         "styled-components": "^5.3.3",
         "styled-reset": "^4.3.4",
         "trim": "^1.0.1",
+        "viem": "^0.3.31",
+        "wagmi": "^1.0.5",
         "web3": "^1.8.1",
         "yarn": "^1.22.19"
     },
