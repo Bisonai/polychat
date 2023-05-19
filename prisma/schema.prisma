@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bagc_nfts {
+  idx                 Int          @id @default(autoincrement())
+  mint_address        String       @db.VarChar(255)
+  contract_address    String       @db.VarChar(255)
+  token_id            String       @db.VarChar(255)
+  bayc_id             String?      @db.VarChar(255)
+  bayc_selected       Boolean      @default(false)
+  tx_hash             String?      @db.VarChar(255)
+  token_uri           String?      @db.VarChar(255)
+  burned              Boolean      @default(false)
+  payment_token       PaymentToken
+  mint_timestamp      Int?
+  locked              Boolean      @default(false)
+  lock_start          Int?         @default(0)
+  lock_end            Int?         @default(0)
+  invitation_token_id String?      @db.VarChar(255)
+  created_at          DateTime     @default(now()) @db.DateTime(0)
+  updated_at          DateTime?    @updatedAt
+
+  @@unique([contract_address, token_id])
+  @@index([mint_address, token_id])
+}
+
+model invitation_nfts {
+  idx              Int          @id @default(autoincrement())
+  mint_address     String       @db.VarChar(255)
+  contract_address String       @db.VarChar(255)
+  token_id         String       @db.VarChar(255)
+  bayc_id          String?      @db.VarChar(255)
+  bayc_selected    Boolean      @default(false)
+  tx_hash          String?      @db.VarChar(255)
+  token_uri        String?      @db.VarChar(255)
+  burned           Boolean      @default(false)
+  sale_type        SaleType
+  holder_type      HolderType
+  payment_token    PaymentToken
+  mint_timestamp   Int?
+  created_at       DateTime     @default(now()) @db.DateTime(0)
+  updated_at       DateTime?    @updatedAt
+  temp_idx         Int?
+  bakc_id          String?      @db.VarChar(255)
+  mayc_id          String?      @db.VarChar(255)
+  schedule         schedule     @relation(fields: [sale_type], references: [sale_type])
+
+  @@unique([contract_address, token_id])
+  @@index([mint_address, token_id])
+  @@index([sale_type], map: "invitation_nfts_sale_type_fkey")
+}
+
+model invitation_nfts_temp {
+  idx              Int          @id @default(autoincrement())
+  mint_address     String       @db.VarChar(255)
+  contract_address String       @db.VarChar(255)
+  token_id         String?      @db.VarChar(255)
+  bayc_id          String?      @db.VarChar(255)
+  bayc_selected    Boolean?     @default(false)
+  tx_hash          String       @db.VarChar(255)
+  token_uri        String?      @db.VarChar(255)
+  sale_type        SaleType
+  holder_type      HolderType
+  payment_token    PaymentToken
+  mint_timestamp   Int?
+  mint_status      MintStatus
+  error            String?      @db.Text
+  created_at       DateTime     @default(now()) @db.DateTime(0)
+  updated_at       DateTime?    @updatedAt
+  block_number     Int?
+  tx_receipt       Json?
+  bakc_id          String?      @db.VarChar(255)
+  mayc_id          String?      @db.VarChar(255)
+  schedule_temp    schedule     @relation(fields: [sale_type], references: [sale_type])
+
+  @@index([mint_address, token_id])
+  @@index([mint_status])
+  @@index([sale_type], map: "invitation_nfts_sale_type_fkey")
+}
+
+model bagc_attributes {
+  idx        BigInt     @id @default(autoincrement())
+  token_id   String     @db.VarChar(255)
+  trait_type Attributes
+  value      String     @db.VarChar(255)
+
+  @@unique([token_id, trait_type])
+}
+
+model schedule {
+  idx                  Int                    @id @default(autoincrement())
+  title                String                 @db.VarChar(255)
+  end_timestamp        Int
+  start_timestamp      Int
+  description          String                 @db.VarChar(255)
+  amount               Int                    @default(0)
+  limit                Int
+  sale_type            SaleType               @unique
+  timer_title          String                 @db.VarChar(255)
+  invitation_nfts      invitation_nfts[]
+  invitation_nfts_temp invitation_nfts_temp[]
+}
+
+model white_list {
+  idx        Int     @id @default(autoincrement())
+  address    String? @db.VarChar(255)
+  type       WLType
+  amount_max Int     @default(0)
+}
+
+model website_config {
+  idx                 Int     @id @default(autoincrement())
+  display_mint_amount Int?
+  disable_mint        Boolean @default(false)
+  start_timestamp     Int
+  end_timestamp       Int
+}
+
+model accounts {
+  address                String                   @id @db.VarChar(255)
+  created_at             DateTime                 @default(now()) @db.DateTime(0)
+  updated_at             DateTime?                @updatedAt
+  wallet                 String
+  minted_count           Int                      @default(0)
+  ss_minted_count        Int                      @default(0)
+  yuga_labs_minted_count Int                      @default(0)
+  wallet_connect_history wallet_connect_history[]
+}
+
+model wallet_connect_history {
+  idx      Int      @id @default(autoincrement())
+  address  String   @db.VarChar(255)
+  balance  Json
+  tokens   Json
+  wallet   String
+  chainId  Int
+  accounts accounts @relation(fields: [address], references: [address])
+
+  @@index([address])
+}
+
+model token_id_mapppings {
+  idx      Int    @id @default(autoincrement())
+  token_id String @db.VarChar(255)
+  bayc_id  String @db.VarChar(255)
+}
+
+model sold_out_popup {
+  idx             Int     @id @default(autoincrement())
+  sold_out_in     String? @db.VarChar(255)
+  extra_quantity  String? @db.VarChar(255)
+  date            Int?
+  start_timestamp Int?
+  end_timestamp   Int?
+  image_mobile    String?
+  image_pc        String?
+  image_tab       String?
+  height_mobile   Int?
+  height_pc       Int?
+  height_tab      Int?
+  width_mobile    Int?
+  width_pc        Int?
+  width_tab       Int?
+}
+
+model yuga_labs_mint_token_id {
+  idx           Int                               @id @default(0) @db.UnsignedInt
+  reg_date_time DateTime                          @default(now()) @db.DateTime(0)
+  refreshed     yuga_labs_mint_token_id_refreshed @default(N)
+}
+
+enum MintStatus {
+  DISPATCHED
+  CANCELED
+  PENDING
+  REVERTED
+  ERROR
+  SUCCESS
+}
+
+enum SaleType {
+  WL_MINT
+  PUBLIC_MINT
+  SS_SALE
+  YUGA_LABS
+  AIRDROP_MINT
+}
+
+enum HolderType {
+  NORMAL
+  SS
+  BAYC
+  BAKC
+  MAYC
+}
+
+enum PaymentToken {
+  ETH
+  TAVA
+  APE
+}
+
+enum Attributes {
+  BAYC_ID
+  Rarity
+  Pose
+  Background
+  Fashion
+  Item
+  Hat
+  Gloves
+}
+
+enum WLType {
+  WL_MINT
+  SS_SALE
+}
+
+enum yuga_labs_mint_token_id_refreshed {
+  Y
+  N
+}

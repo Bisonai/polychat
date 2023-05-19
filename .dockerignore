@@ -1,0 +1,16 @@
+.idea
+.git
+.gitignore
+.dockerignore
+Dockerfile
+*.md
+*.sh
+*.yml
+scripts
+.prettier
+.prettierignore
+.gitattributes
+.eslintignore
+.eslintrc
+.env.example
+node_modules
