@@ -21,7 +21,7 @@ export default function MessageInput({ channelId }: { channelId: string }) {
             component="form"
             sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: "100%" }}
         >
-            <IconButton sx={{ p: "10px" }} aria-label="profile">
+            <IconButton sx={{ p: "10px" }} aria-label="Send Assets">
                 <IconAdd />
             </IconButton>
             <InputBase

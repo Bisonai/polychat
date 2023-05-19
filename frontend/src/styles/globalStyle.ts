@@ -401,6 +401,9 @@ input {
         padding: 0px;
     }
 }
+.MuiMobileStepper-dots{
+ gap: 8px
+}
 `;
 
 export default GlobalStyleElement;
