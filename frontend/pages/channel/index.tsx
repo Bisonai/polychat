@@ -1,8 +1,8 @@
 import { ReactElement } from "react";
-import { ChannelTemplate } from "@src/templates/ChannelListTemplate";
+import { ChannelListTemplate } from "@src/templates/ChannelListTemplate";
 
-const ChannelPage = (): ReactElement => {
-    return <ChannelTemplate />;
+const ChannelListPage = (): ReactElement => {
+    return <ChannelListTemplate />;
 };
 
-export default ChannelPage;
+export default ChannelListPage;
