@@ -1,0 +1,8 @@
+version: '3.7'
+
+services:
+  orakl-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cinder
