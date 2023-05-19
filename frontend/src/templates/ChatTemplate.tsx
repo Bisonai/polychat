@@ -1,5 +1,10 @@
+import ChatList from "@components/Chat/ChatList";
 import { ReactElement } from "react";
 
-export const ChatTemplate = (): ReactElement => {
-    return <div>TODO!</div>;
+export const ChatListTemplate = (): ReactElement => {
+    return (
+        <div>
+            <ChatList />
+        </div>
+    );
 };

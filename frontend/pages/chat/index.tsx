@@ -1,8 +1,8 @@
-import { ChatTemplate } from "@src/templates/ChatTemplate";
+import { ChatListTemplate } from "@src/templates/ChatTemplate";
 
-const ChatPage = () => {
+const ChaListPage = () => {
     // 로그인 여부
-    return <ChatTemplate />;
+    return <ChatListTemplate />;
 };
 
-export default ChatPage;
+export default ChaListPage;

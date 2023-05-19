@@ -30,7 +30,7 @@ export default function LabelBottomNavigation() {
     }, []);
 
     return (
-        <BottomNavigation sx={{ width: 500 }} value={value} onChange={handleChange}>
+        <BottomNavigation value={value} onChange={handleChange}>
             <BottomNavigationAction label="Home" value={Route.home} icon={<FolderIcon />} />
             <BottomNavigationAction label="Message" value={Route.chat} icon={<FavoriteIcon />} />
             <BottomNavigationAction label="History" value={Route.history} icon={<RestoreIcon />} />
