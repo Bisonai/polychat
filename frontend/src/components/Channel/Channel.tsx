@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
 import { IAccount, IChannel } from "@src/types";
 
-export default function Channel() {
+export default function ChannelList() {
     const router = useRouter();
     const members: IAccount[] = [
         {
@@ -67,7 +67,7 @@ export default function Channel() {
         },
     ];
 
-    const handleMessageClick = (chatId: number) => {
+    const handleChannelClick = (chatId: number) => {
         router.push(`/channel/${chatId}`);
     };
     return (
@@ -77,7 +77,7 @@ export default function Channel() {
                     <ListItem
                         alignItems="flex-start"
                         key={key}
-                        onClick={() => handleMessageClick(chatList.id)}
+                        onClick={() => handleChannelClick(chatList.id)}
                     >
                         <ListItemAvatar>
                             <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
