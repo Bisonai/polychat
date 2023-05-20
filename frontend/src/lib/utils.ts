@@ -4,11 +4,12 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 // import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { polygonMumbai } from "@wagmi/core/chains";
 import Moralis from 'moralis'
-import { EvmNft } from "moralis/common-evm-utils";
+import { Erc20Token, EvmNft } from "moralis/common-evm-utils";
 import { Connector } from "wagmi";
-import ERC20Abi from "@src/lib/abi/ERC20.json";
-import ERC721Abi from "@src/lib/abi/ERC721.json";
+import { erc20ABI } from 'wagmi'
+import { erc721ABI } from 'wagmi'
 import { ethers } from 'ethers'
+import { TransactionReceipt } from "viem";
 
 const chains = [polygonMumbai]
 const metaMaskConnector = new MetaMaskConnector({ chains })
@@ -39,17 +40,21 @@ export const shortenAddress = (address: string, chars = 5) => {
 }
 
 
-export const sendNFT = async (connector: Connector, nft: EvmNft, to: string) => {
-    // SEND ERC721 NFT
-    const provider = await connector.getProvider({ chainId: 80001 })
-    const contract = new ethers.Contract(nft.tokenAddress.toJSON(), ERC721Abi.abi, provider)
-    const nftContract = contract.connect(provider.getSigner())
-    return nftContract.safeTransferFrom(provider.getSigner().getAddress(), to, nft.tokenId)
+export const sendNFT = async (connector: Connector, nft: EvmNft, to: string): Promise<TransactionReceipt> => {
+    const provider = new ethers.providers.Web3Provider(await connector.getProvider({ chainId: 80001 }))
+    const signer = await provider.getSigner()
+    const contract = new ethers.Contract(nft.tokenAddress.toJSON(), erc721ABI, provider)
+    const nftContract = contract.connect(signer)
+    const request = await nftContract.transferFrom(provider.getSigner().getAddress(), to, nft.tokenId)
+    return request.wait()
 }
 
 
-export const sendToken = async (connector: Connector, nft: EvmNft, to: string) => {
-    // SEND ERC721 NFT
-
-
+export const sendToken = async (connector: Connector, token: Erc20Token, amount: number, to: string): Promise<TransactionReceipt> => {
+    const provider = new ethers.providers.Web3Provider(await connector.getProvider({ chainId: 80001 }))
+    const signer = await provider.getSigner()
+    const contract = new ethers.Contract(token.contractAddress.toJSON(), erc20ABI, provider)
+    const tokenContract = contract.connect(signer)
+    const request = await tokenContract.transfer(to, amount)
+    return request.wait()
 }

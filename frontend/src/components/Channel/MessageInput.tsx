@@ -15,30 +15,42 @@ import {
     Checkbox,
     CircularProgress,
     Divider,
+    FilledInput,
     FormControl,
     FormControlLabel,
     FormLabel,
     Grid,
+    Input,
+    InputAdornment,
     InputBase,
+    InputLabel,
     List,
     ListItem,
     ListItemAvatar,
     ListItemButton,
     ListItemText,
+    MenuItem,
     Modal,
     Radio,
     RadioGroup,
+    Select,
     Skeleton,
     Step,
     StepLabel,
     Stepper,
+    TextField,
     Typography,
 } from "@mui/material";
 import { IAccount } from "@src/types";
 import { Connector, useAccount, useQuery } from "wagmi";
 import Moralis from "moralis";
-import { EvmNft } from "moralis/common-evm-utils";
-import { sendNFT, shortenAddress } from "@src/lib/utils";
+import { Erc20Token, Erc20Value, EvmNft } from "moralis/common-evm-utils";
+import { sendNFT, sendToken, shortenAddress } from "@src/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { usePublicClient, useWalletClient } from "wagmi";
+import Image from "next/image";
+import axios from "axios";
+import { ethers } from "ethers";
 
 export default function MessageInput({ channelId }: { channelId: string }) {
     const [open, setOpen] = React.useState(false);
@@ -64,7 +76,14 @@ export default function MessageInput({ channelId }: { channelId: string }) {
     const handleSelectSendType = (sendType: string) => {
         setSendType(sendType);
     };
-
+    let title = "";
+    if (sendType === "NFT") {
+        title = "Send NFT";
+    } else if (sendType === "Token") {
+        title = "Send Token";
+    } else {
+        title = "Select Type";
+    }
     return (
         <>
             <Modal open={open} onClose={handleClose}>
@@ -85,13 +104,7 @@ export default function MessageInput({ channelId }: { channelId: string }) {
                 >
                     <CardHeader
                         align="center"
-                        title={
-                            !sendType
-                                ? "Select Type"
-                                : sendType === "NFT"
-                                ? "Send NFT"
-                                : "Send Token"
-                        }
+                        title={title}
                         action={
                             <IconButton aria-label="close" onClick={handleClose}>
                                 <IconClose />
@@ -156,14 +169,17 @@ export default function MessageInput({ channelId }: { channelId: string }) {
 
 export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: boolean }) => {
     const stepMap = {
-        "0": "Select User To Send",
+        "0": "Select User",
         "1": `${isNFT ? "Select NFT" : "Select Token"}`,
         "2": "Confirm",
     };
     const [step, setStep] = React.useState(0);
     const [selectedUser, setSelectedUser] = React.useState("");
     const [selectedNFT, setSelectedNFT] = React.useState<EvmNft | null>(null);
-
+    const [selectedToken, setSelectedToken] = React.useState<Erc20Token | null>(null);
+    const [amount, setAmount] = React.useState(0);
+    const [err, setErr] = React.useState("");
+    const [txHash, setTxHash] = React.useState("");
     // TODO: Get Participants of the channel
     const members: IAccount[] = [
         {
@@ -179,8 +195,8 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
             id: 2,
             name: "Bryan",
             imgUrl: "/static/images/avatar/2.jpg",
-            polygonId: "0xc34b48Bed1e9DdaB6DD98264D17D7FC7EF595077",
-            address: "0xc34b48Bed1e9DdaB6DD98264D17D7FC7EF595077",
+            polygonId: "0x5aEcC9617cC5A4De21BaFFFEa16153eeB7A2ac14",
+            address: "0x5aEcC9617cC5A4De21BaFFFEa16153eeB7A2ac14",
             createdAt: "1634175600",
             updatedAt: "1634175600",
         },
@@ -195,9 +211,21 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
         },
     ];
     const { address, connector } = useAccount();
+
     const requestNFTsQuery = useQuery(["nfts", address], {
         queryFn: async () => {
             const request = await Moralis.EvmApi.nft.getWalletNFTs({
+                chain: "0x13881",
+                address,
+            });
+            console.log(request.result);
+            return request.result || [];
+        },
+    });
+
+    const requestTokensQuery = useQuery(["tokens", address], {
+        queryFn: async () => {
+            const request = await Moralis.EvmApi.token.getWalletTokenBalances({
                 chain: "0x13881",
                 address,
             });
@@ -211,22 +239,50 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
         setStep(2);
     };
 
+    const handleTokenSelect = (token: Erc20Token, amount: number) => {
+        setSelectedToken(token);
+        setAmount(amount);
+        setStep(2);
+    };
     React.useEffect(() => {
+        if (err || txHash) {
+            return;
+        }
         if (step === 2) {
-            console.log(selectedUser, selectedNFT);
-            // TODO: Check if the user has the NFT
-            sendNFT(connector, selectedNFT as EvmNft, selectedUser);
+            if (isNFT) {
+                sendNFT(connector, selectedNFT as EvmNft, selectedUser)
+                    .then((result) => {
+                        console.log(result);
+                        // TODO: Send Tx Hash
+                        setTxHash(result.transactionHash);
+                    })
+                    .catch((err) => {
+                        setErr(err.message || "Unknown Error");
+                    });
+            } else {
+                sendToken(connector, selectedToken, amount, selectedUser)
+                    .then((result) => {
+                        console.log(result);
+                        // TODO: Send Tx Hash
+                        setTxHash(result.transactionHash);
+                    })
+                    .catch((err) => {
+                        setErr(err.message || "Unknown Error");
+                    });
+            }
         }
     }, [step]);
     return (
         <Box sx={{ width: "100%" }}>
-            <Stepper activeStep={step} alternativeLabel>
-                {Object.entries(stepMap).map(([key, label]) => (
-                    <Step key={key}>
-                        <StepLabel>{label}</StepLabel>
-                    </Step>
-                ))}
-            </Stepper>
+            {!err && !txHash && (
+                <Stepper activeStep={step} alternativeLabel>
+                    {Object.entries(stepMap).map(([key, label]) => (
+                        <Step key={key}>
+                            <StepLabel>{label}</StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
+            )}
             <Divider style={{ margin: "16px" }} />
             <Grid>
                 {step === 0 && (
@@ -237,7 +293,6 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
                             return acc;
                         }, {})}
                         onSelect={(value) => {
-                            console.log(value);
                             setSelectedUser(value);
                             setStep(1);
                         }}
@@ -245,10 +300,42 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
                 )}
 
                 {step === 1 &&
-                    (requestNFTsQuery.isFetching ? (
-                        <Skeleton />
+                    (isNFT ? (
+                        requestNFTsQuery.isFetching ? (
+                            <Grid display={"flex"} flexDirection={"column"} gap={"8px"}>
+                                {Array.from(Array(4).keys()).map((key) => (
+                                    <Skeleton
+                                        key={key}
+                                        width={300}
+                                        height={56}
+                                        component={"div"}
+                                        variant="rectangular"
+                                    />
+                                ))}
+                            </Grid>
+                        ) : (
+                            <NFTList
+                                nfts={requestNFTsQuery.data || []}
+                                onSelect={handleNFTSelect}
+                            />
+                        )
+                    ) : requestTokensQuery.isFetching ? (
+                        <Grid display={"flex"} flexDirection={"column"} gap={2}>
+                            {Array.from(Array(4).keys()).map((key) => (
+                                <Skeleton
+                                    key={key}
+                                    width={300}
+                                    height={56}
+                                    component={"div"}
+                                    variant="rectangular"
+                                />
+                            ))}
+                        </Grid>
                     ) : (
-                        <NFTList nfts={requestNFTsQuery.data || []} onSelect={handleNFTSelect} />
+                        <TokenList
+                            tokens={requestTokensQuery.data || []}
+                            onSelect={handleTokenSelect}
+                        />
                     ))}
                 {step === 2 && (
                     <Grid
@@ -257,10 +344,39 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
                         alignItems={"center"}
                         gap={"16px"}
                     >
-                        <CircularProgress thickness={5} size={60} />
-                        <Typography fontWeight={600} fontSize={"24px"}>
-                            Signing...{" "}
-                        </Typography>
+                        {txHash ? (
+                            <>
+                                <Image
+                                    width={60}
+                                    height={56}
+                                    src={"/images/success.svg"}
+                                    alt="success"
+                                />
+                                <Typography fontWeight={600} fontSize={"24px"}>
+                                    Success
+                                </Typography>
+                            </>
+                        ) : err ? (
+                            <>
+                                <Image
+                                    width={60}
+                                    height={56}
+                                    src={"/images/fail.svg"}
+                                    alt="failed"
+                                />
+                                <Typography fontWeight={600} fontSize={"24px"}>
+                                    Failed!
+                                </Typography>
+                                <Typography fontSize={"10px"}>{shortenAddress(err, 20)}</Typography>
+                            </>
+                        ) : (
+                            <>
+                                <CircularProgress thickness={5} size={60} />
+                                <Typography fontWeight={600} fontSize={"24px"}>
+                                    Signing...
+                                </Typography>
+                            </>
+                        )}
                     </Grid>
                 )}
             </Grid>
@@ -306,15 +422,35 @@ export const NFTList = ({
     nfts: EvmNft[];
     onSelect: (value: EvmNft) => void;
 }) => {
-    console.log(nfts);
-
+    const [nftImages, setNftImages] = React.useState<{ [key: string]: string }>({});
+    React.useEffect(() => {
+        Promise.all(
+            nfts.map((nft) => {
+                return axios
+                    .get(nft.tokenUri)
+                    .then((res) => {
+                        return { nft, image: res.data?.image };
+                    })
+                    .catch((err) => ({ nft, image: "" }));
+            }),
+        ).then((nfts) => {
+            const images = nfts.reduce((acc, nft) => {
+                acc[nft.nft.tokenAddress + nft.nft.tokenId.toString()] = nft.image;
+                return acc;
+            }, {});
+            setNftImages(images);
+        });
+    }, []);
     return (
         <List dense sx={{ width: "100%", bgcolor: "background.paper" }}>
             {nfts.map((nft, key) => (
                 <ListItem key={key} onClick={() => onSelect(nft)} disablePadding>
                     <ListItemButton>
                         <ListItemAvatar>
-                            <Avatar alt={nft.name} src={nft.tokenUri} />
+                            <Avatar
+                                alt={nft.name}
+                                src={nftImages[nft.tokenAddress + nft.tokenId.toString()]}
+                            />
                         </ListItemAvatar>
                         <ListItemText
                             primary={
@@ -331,6 +467,101 @@ export const NFTList = ({
                     </ListItemButton>
                 </ListItem>
             ))}
+        </List>
+    );
+};
+
+export const TokenList = ({
+    tokens,
+    onSelect,
+}: {
+    tokens: Erc20Value[];
+    onSelect: (token: Erc20Token, amount: number) => any;
+}) => {
+    const [selectedToken, setSelectedToken] = React.useState<Erc20Value | null>(null);
+    const [amount, setAmount] = React.useState(0);
+
+    const handleSendToken = () => {
+        if (!selectedToken) {
+            return;
+        } else if (!amount) {
+            return;
+        } else if (amount < 0) {
+            return;
+        } else if (amount > Number(selectedToken.amount)) {
+            return;
+        }
+        onSelect(selectedToken.token, amount);
+    };
+    const disabled =
+        selectedToken === null ||
+        !amount ||
+        amount <= BigInt(0) ||
+        amount > Number(formatUnits(selectedToken.amount.toBigInt()));
+
+    return (
+        <List dense sx={{ width: "100%", bgcolor: "background.paper" }}>
+            {tokens.map((erc20Value, key) => {
+                const token = erc20Value.token;
+                const amount = erc20Value.amount;
+
+                return selectedToken ? (
+                    <Grid display={"flex"} flexDirection={"column"} gap={"8px"}>
+                        <Input
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    {selectedToken.token.symbol}
+                                </InputAdornment>
+                            }
+                            type="number"
+                            placeholder="Amount"
+                            inputProps={{
+                                "aria-label": selectedToken.token.symbol,
+                                max: formatUnits(selectedToken.amount.toBigInt()),
+                                min: 0,
+                            }}
+                            onChange={(e) => {
+                                setAmount(Number(e.target.value));
+                            }}
+                        />
+                        <Button
+                            variant="outlined"
+                            size="large"
+                            color="primary"
+                            sx={{ height: "56px", borderRadius: "8px" }}
+                            fullWidth
+                            disabled={disabled}
+                            onClick={handleSendToken}
+                        >
+                            SEND
+                        </Button>
+                    </Grid>
+                ) : (
+                    <ListItem onClick={() => setSelectedToken(erc20Value)} key={key} disablePadding>
+                        <ListItemButton>
+                            <ListItemAvatar>
+                                <Avatar alt={token.name} src={token.thumbnail} />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={
+                                    <>
+                                        <Typography>{token.name}</Typography>
+                                        <Typography>
+                                            {formatUnits(erc20Value.amount.toBigInt())}{" "}
+                                            {token.symbol}
+                                        </Typography>
+                                    </>
+                                }
+                                secondary={
+                                    <Typography variant="body2" color="text.secondary">
+                                        {shortenAddress(token.contractAddress.toJSON())}
+                                    </Typography>
+                                }
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                );
+            })}
         </List>
     );
 };
