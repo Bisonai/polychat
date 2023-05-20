@@ -30,15 +30,14 @@ export const connecters: Record<IWalletName, any> = {
     [IWalletName.Metamask]: metaMaskConnector,
     [IWalletName.Coinbase]: coinbaseWalletConnector,
     // [IWalletName.WalletConnect]: walletConnectConnector,
-}
+};
 
 export const shortenAddress = (address: string, chars = 5) => {
     return `${address.substring(0, chars + 2)}...${address.substring(
         address.length - chars,
-        address.length
-    )}`
-}
-
+        address.length,
+    )}`;
+};
 
 export const sendNFT = async (connector: Connector, nft: EvmNft, to: string): Promise<TransactionReceipt> => {
     const provider = new ethers.providers.Web3Provider(await connector.getProvider({ chainId: 80001 }))
@@ -69,3 +68,14 @@ export const sendToken = async (connector: Connector, token: Erc20Token, amount:
     return request.wait()
 }
 
+export function getTokenPercentChangeIn24h(listOfPrice, tokenSymbol): number {
+    if (isEmpty(listOfPrice)) return 0;
+
+    try {
+        const tokenInfo = listOfPrice.find((info) => info.symbol == tokenSymbol);
+        return tokenInfo.quote.USD.percent_change_24h;
+    } catch (err) {
+        console.error(err);
+        return 0;
+    }
+}

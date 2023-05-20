@@ -85,10 +85,11 @@ export enum IWalletName {
 }
 
 export interface IBalance {
-    name: string;
+    chainName: string;
     tickerName: string;
     symbol: string;
     quantity: number;
-    valueInUSD: number;
+    valueInUSD: string;
     formatted: string;
+    percentChange24h?: number;
 }
