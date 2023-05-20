@@ -1,14 +1,17 @@
-# template-contract
+# PolyChat Smart Contracts
 
-Smart contract template repository
+## Deplyed Contracts
+
+All the contracts are deployed and verifued on `Mumbai testnet`
+
+- `PolyChat` contract - [0x3554ecb314f8bc660b63f39b61efafc45da43f7f](https://mumbai.polygonscan.com/address/0x3554ecb314f8bc660b63f39b61efafc45da43f7f#code)
+- `AdRevenueShare` contract - [0xbab47ec72e8bb4f45352d3c5cd1b8480c0311588](https://mumbai.polygonscan.com/address/0xbab47ec72e8bb4f45352d3c5cd1b8480c0311588#code)
+- `PolyChain Coin` contract - [0x62626e7670fa18737513239230b7c10ce1423bab](https://mumbai.polygonscan.com/address/0x62626e7670fa18737513239230b7c10ce1423bab#code)
+- `NFT` contract - [0x3554ecb314f8bc660b63f39b61efafc45da43f7f](https://mumbai.polygonscan.com/tx/0xcf60dd51f5d5eb6f901c32290befbbdcf6ea2b524c1b946bbe7a9b5b0f617a1b#code)
+
+# How to run
 
 ## Prerequisites
-
-Generate mnemonic.
-
-```shell
-npx mnemonics
-```
 
 Create `.env` from `.env.example`
 
@@ -16,35 +19,29 @@ Create `.env` from `.env.example`
 cp .env.example .env
 ```
 
-and fill in generated mnemonic to `MNEMONIC` environment variable.
+fill in all environment variables.
+
+## Installation
+
+```
+yarn install
+```
 
 ## Deploy locally
 
 ```shell
 npx hardhat node
-npx hardhat compile
-npx hardhat run --network localhost ./scripts/deploy.ts
+yarn deploy-polyChat --network localhost
 ```
 
-## Deploy to Baobab
-
-### Compile smart contracts
+## Deploy to Mumbai testnet
 
 ```shell
-npx hardhat compile
-npx hardhat run --network baobab ./scripts/deploy.ts
+yarn deploy-polyChat --network mumbai
 ```
 
 ## Run test
 
 ```shell
-npx hardhat test
-```
-
-## Package
-
-```shell
-npx hardhat compile
-yarn build
-yarn pub
+yarn test
 ```
