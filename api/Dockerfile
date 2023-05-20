@@ -13,11 +13,15 @@ COPY package.json .
 COPY yarn.lock .
 
 COPY tsconfig.json .
-COPY dist .
+
 COPY src src
 
 COPY prisma prisma
 
 RUN yarn install
+
+RUN npx prisma generate
+
+RUN yarn build
 
 CMD ["yarn start:prod"]
