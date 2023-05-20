@@ -36,11 +36,6 @@ export const HomeTemplate = (): ReactElement => {
     const [openQRModal, setOpenQRModal] = useState<boolean>(false);
     const textInputRef = useRef<HTMLInputElement>(null);
     const accountQueryClient = useQueryClient();
-    accountQueryClient.fetchQuery(["account"]).then((account: IAccount) => {
-        if (!account) {
-            setAccount(account);
-        }
-    });
 
     const handleSnackbarClose = () => {
         setOpenSnackbar(false);
@@ -331,6 +326,12 @@ export const HomeTemplate = (): ReactElement => {
             const data = await fetch("/api/coinmarketcap").then((res) => res.json());
             setListOfPrice(data);
         };
+
+        accountQueryClient.fetchQuery(["account"]).then((acc: IAccount) => {
+            if (!account) {
+                setAccount(acc);
+            }
+        });
 
         fetchData().catch(() => console.error);
     }, []);
