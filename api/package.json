@@ -1,8 +1,8 @@
 {
-  "name": "@bisonai/orakl-monitor",
+  "name": "poly-chat",
   "version": "0.0.1",
-  "description": "Orakl Network Monitoring System",
-  "author": "Bisonai",
+  "description": "polyCHAT Api",
+  "author": "young-blood",
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",

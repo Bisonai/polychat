@@ -16,41 +16,30 @@ export default class MyDocument extends Document {
                     />
                     <link rel="shortcut icon" href="/favicon.ico" />
                     <meta charSet="utf-8" />
-                    <meta name="keyword" content="bagc,bayc,nft,golf" />
+                    <meta
+                        name="keyword"
+                        content="polychat,polygon,glitch,chat,blockchain,messenger"
+                    />
                     <meta name="robots" content="ALL" />
                     <meta name="robots" content="index,follow" />
-                    <meta name="author" content="BISONAI" />
-                    <meta name="reply-to" content="business@bisonai.com" />
+                    <meta name="author" content="Youngblood" />
                     <meta name="content-language" content="en" />
 
-                    <meta name="title" content="BAGC-Minting" />
-                    {/* <meta
-                        name="description"
-                        content=""
-                    /> */}
-                    <meta name="author" content="Bisonai" />
-                    <meta
-                        property="og:image"
-                        content="https://minting.bagc.altava.com/images/MetaOgImage.jpg"
-                    />
+                    <meta name="title" content="polyCHAT" />
+                    <meta name="description" content="Blockchain messenger" />
+                    <meta property="og:image" content="https://polychat.in/images/logo.png" />
                     <meta property="og:image:width" content="400" />
                     <meta property="og:image:height" content="210" />
-                    <meta property="og:url" content="https://minting.bagc.altava.com" />
-                    {/* <meta
-                        property="og:description"
-                        content=""
-                    /> */}
+                    <meta property="og:url" content="https://polychat.in" />
+                    <meta property="og:description" content="Blockchain messenger" />
                     <meta property="og:type" content="website" />
-                    <meta property="og:title" content="BAGC-Minting" />
+                    <meta property="og:title" content="polyCHAT" />
 
                     <meta name="twitter:card" content="summary" />
-                    <meta name="twitter:title" content="BAGC-Minting" />
-                    <meta name="twitter:description" content="" />
-                    <meta
-                        name="twitter:image"
-                        content="https://minting.bagc.altava.com/images/MetaOgImage.jpg"
-                    />
-                    <meta name="twitter:domain" content="https://minting.bagc.altava.com" />
+                    <meta name="twitter:title" content="polyCHAT" />
+                    <meta name="twitter:description" content="Blockchain messenger" />
+                    <meta name="twitter:image" content="https://polychat.in/images/logo.png" />
+                    <meta name="twitter:domain" content="https://polychat.in" />
                 </Head>
                 <body>
                     <Main />

@@ -58,7 +58,7 @@ function MyApp(props: AppProps) {
                         <CssBaseline />
                         <Head>
                             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                            <title>Cinder</title>
+                            <title>polyCHAT</title>
                         </Head>
                         <CheckLogin>
                             <Component {...pageProps} />

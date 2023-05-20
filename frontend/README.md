@@ -1,4 +1,4 @@
-<!-- # BAGC
+<!-- # PolyChat
 
 ## HOW TO RUN
 ### 1. Install Docker and docker-compose
@@ -24,12 +24,12 @@ Get in to the mysql container
   mysql -u root -p
 ``` -->
 
-# BAGC
+# PolyChat
 
 ## HOW TO RUN
 
-
 ### 1. Install packages
+
 ```
 cd frontend
 nvm use

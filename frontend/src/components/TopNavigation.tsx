@@ -122,7 +122,7 @@ export default function TopNavigation() {
                         component="div"
                         sx={{ display: { xs: "none", sm: "block" } }}
                     >
-                        Cinder
+                        polyCHAT
                     </Typography>
 
                     <Box sx={{ flexGrow: 1 }} />
