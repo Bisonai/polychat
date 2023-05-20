@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -14,26 +13,21 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { useDisconnect } from "wagmi";
 import { useRouter } from "next/router";
 import { routes } from "@src/lib/route";
+import { useQuery, useQueryClient } from "react-query";
+import { IChannel } from "@src/types";
+import { getChannels } from "@src/lib/api";
+import { ParsedUrlQuery } from "querystring";
 
 export default function TopNavigation() {
     const { disconnect } = useDisconnect();
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
     const router = useRouter();
-    const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-    const handleProfile = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
+    const channelQuery = useQuery(["channels"], {
+        queryFn: getChannels,
+    });
     const handleMobileMenuClose = () => {
         setMobileMoreAnchorEl(null);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-        handleMobileMenuClose();
     };
 
     const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -45,27 +39,6 @@ export default function TopNavigation() {
     };
 
     const menuId = "primary-search-account-menu";
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-        </Menu>
-    );
-
     const mobileMenuId = "primary-search-account-menu-mobile";
     const renderMobileMenu = (
         <Menu
@@ -83,26 +56,6 @@ export default function TopNavigation() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={handleProfile}>
-                <IconButton
-                    size="large"
-                    aria-label="account of current user"
-                    aria-controls="primary-search-account-menu"
-                    aria-haspopup="true"
-                    color="inherit"
-                >
-                    <AccountCircle />
-                </IconButton>
-                <p>Profile</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton size="large" aria-label="show messenger" color="inherit">
-                    {/* <Badge badgeContent={0} color="error"> */}
-                    <MailIcon />
-                    {/* </Badge> */}
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
             <MenuItem onClick={handleLogout}>
                 <IconButton size="large" aria-label="Logout" color="inherit">
                     <LogoutIcon />
@@ -112,10 +65,21 @@ export default function TopNavigation() {
         </Menu>
     );
 
+    const getCurrentChannel = (channels: IChannel[], curChannelId: number): IChannel => {
+        return channels.find((ch) => ch.id == curChannelId);
+    };
+
+    const parseRouterQueryForChannelId = (query: ParsedUrlQuery): number | undefined => {
+        const key = "channelId";
+        if (!(key in query)) return;
+
+        return parseInt(query.channelId.toString());
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
-                <Toolbar>
+                <Toolbar sx={{ justifyContent: "space-between" }}>
                     <Typography
                         variant="h6"
                         noWrap
@@ -124,8 +88,18 @@ export default function TopNavigation() {
                     >
                         <img src="/images/nav-logo.png" alt="logo" width={100} height={39} />
                     </Typography>
-
-                    <Box sx={{ flexGrow: 1 }} />
+                    {channelQuery.isFetching ? (
+                        <div></div>
+                    ) : (
+                        <Typography>
+                            {
+                                getCurrentChannel(
+                                    channelQuery.data,
+                                    parseRouterQueryForChannelId(router.query),
+                                )?.channelName
+                            }
+                        </Typography>
+                    )}
                     <Box sx={{ display: { xs: "none", md: "flex" } }}>
                         <IconButton
                             size="large"
@@ -173,7 +147,6 @@ export default function TopNavigation() {
                 </Toolbar>
             </AppBar>
             {renderMobileMenu}
-            {renderMenu}
         </Box>
     );
 }

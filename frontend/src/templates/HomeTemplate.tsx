@@ -321,7 +321,7 @@ export const HomeTemplate = (): ReactElement => {
                                 width: 160,
                                 height: 48,
                                 borderRadius: "8px",
-                                color: "#4856FC",
+                                color: "#8839ec",
                                 background: "#F0F1FF",
                             }}
                             variant="contained"
@@ -349,7 +349,9 @@ export const HomeTemplate = (): ReactElement => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await fetch("/api/coinmarketcap").then((res) => res.json());
+            const data = await fetch("/api/coinmarketcap")
+                .then((res) => res.json())
+                .catch((err) => console.error(err));
             setListOfPrice(data);
         };
 
