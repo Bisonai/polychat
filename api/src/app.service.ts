@@ -1,14 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Client } from "pg";
+import { EventEmitter } from "events";
+import { EventsService } from "./event";
 
 @Injectable()
 export class AppService {
   private readonly client: Client;
+  private readonly emitter: EventEmitter;
 
-  constructor() {
+  constructor(private eventService: EventsService) {
     this.client = new Client({
-      connectionString:
-        "postgresql://bisonai:qlthskdl12@polygon-cinder-database-rds.c4fxu3k4a1gu.ap-southeast-1.rds.amazonaws.com:5432/cinder?schema=public",
+      connectionString: process.env.DATABASE_URL,
     });
 
     this.client.connect((err) => {
@@ -16,18 +18,31 @@ export class AppService {
         console.error("Error connecting to PostgreSQL:", err);
       } else {
         console.log("Connected to PostgreSQL");
-        this.startListening();
+        this.startListListening();
       }
     });
   }
 
-  private startListening() {
-    this.client.query("LISTEN notification");
-
+  startListListening(): any {
+    this.client.query("LISTEN list");
+    this.client.query("LISTEN channel");
     this.client.on("notification", (notification) => {
-      const payload = notification.payload;
-      console.log("Received notification:", payload);
-      // Handle the notification payload as needed
+      const payload = JSON.parse(notification.payload);
+      switch (payload.type) {
+        case "list":
+          console.log("Received list notification:", payload.id);
+          this.eventService.emit("list", payload.id);
+          break;
+        case "channel":
+          console.log("Received channel notification:", payload.id);
+          this.eventService.emitChannel(
+            "channel",
+            payload.id,
+            payload.channel_id
+          );
+          break;
+        default:
+      }
     });
   }
 

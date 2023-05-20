@@ -5,12 +5,15 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Sse,
 } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBody, ApiOperation } from "@nestjs/swagger";
 import { ApiService } from "./api.service";
 import { IAccount, IAccountCreateDto } from "./dto/accountDto";
 import { IChannel, IChannelCreateDTO } from "./dto/channelDto";
 import { IMessage, IMessageCreateDto } from "./dto/messageDto";
+import { interval, Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Controller("/api")
 export class ApiController {
@@ -52,3 +55,5 @@ export class ApiController {
     return await this.apiService.createMessage(_messageCreateDto);
   }
 }
+
+

@@ -5,16 +5,16 @@ export interface IMessage {
   id: bigint;
   channelId: number;
   accountId: number;
-  accountAddress: string;
-  contractAddress: string;
+  accountAddress?: string;
+  contractAddress?: string;
   messageType: IMessageType;
-  txHash: string;
-  tokenValue: Decimal;
-  nftTokenId: string;
-  nftTokenUri: string;
+  txHash?: string;
+  tokenValue?: Decimal;
+  nftTokenId?: string;
+  nftTokenUri?: string;
   message: string;
-  createdAt: Date;
-  deletedAt: Date;
+  createdAt?: Date;
+  deletedAt?: Date;
 }
 
 export interface IMessageCreateDto

@@ -35,7 +35,6 @@ export class ApiService {
       where: { id },
       include: { members: true },
     });
-    console.log("channel accounts:", channelData.members);
     let accountMember: IAccount[] = [];
     await Promise.all(
       await channelData.members.map(async (member) => {
@@ -52,7 +51,6 @@ export class ApiService {
         });
       })
     );
-    console.log(accountMember);
     const channel: IChannel = {
       id,
       channelName: channelData.channel_name,

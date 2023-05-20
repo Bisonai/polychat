@@ -4,11 +4,12 @@ import { AppController } from "./app.controller";
 
 import { ScheduleModule } from "@nestjs/schedule";
 import { ApiModule } from "./api/api.module";
-import { PrismaService } from "nestjs-prisma";
+import { EventsService } from "./event";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 
 @Module({
-  imports: [ScheduleModule.forRoot(), ApiModule],
+  imports: [ScheduleModule.forRoot(), EventEmitterModule.forRoot(), ApiModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EventsService],
 })
 export class AppModule {}
