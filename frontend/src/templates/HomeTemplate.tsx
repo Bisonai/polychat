@@ -125,11 +125,11 @@ export const HomeTemplate = (): ReactElement => {
 
     const getTotalTokenBalanceInUSD = (): number | undefined => {
         if (requestNativeTokensQuery.isFetching || requestERC20TokensQuery.isFetching) {
-            return;
+            return 0;
         }
         const nativeBal = requestNativeTokensQuery.data as IBalance;
         if (isEmpty(nativeBal)) {
-            return;
+            return 0;
         }
 
         let balance = parseFloat(nativeBal.valueInUSD);
@@ -194,7 +194,7 @@ export const HomeTemplate = (): ReactElement => {
         name: string;
         nativeBalance: IBalance;
     }): ReactElement => {
-        return (
+        return nativeBalance ? (
             <Container sx={{ p: 0, background: "#FFFFFF", padding: 2, borderRadius: 4 }}>
                 <Typography fontSize={18} fontWeight={700}>
                     {name}
@@ -227,6 +227,8 @@ export const HomeTemplate = (): ReactElement => {
                     <ContainedButton title="Withdraw" />
                 </Grid>
             </Container>
+        ) : (
+            <Skeleton />
         );
     };
 
