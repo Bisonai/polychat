@@ -14,7 +14,6 @@ import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 import { CheckLogin } from "@src/layouts/CheckLogin";
 import { connecters } from "@src/lib/utils";
 import Moralis from "moralis";
-
 const { chains, publicClient, webSocketPublicClient } = configureChains(
     [polygonMumbai],
     [

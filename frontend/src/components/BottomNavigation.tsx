@@ -30,7 +30,13 @@ export default function LabelBottomNavigation() {
 
     return (
         <BottomNavigation value={value} onChange={handleChange}>
-            <BottomNavigationAction label="Home" value={Route.home} icon={<HomeIcon />} showLabel />
+            <BottomNavigationAction
+                label="Home"
+                value={Route.home}
+                icon={<HomeIcon />}
+                showLabel
+                defaultChecked
+            />
             <BottomNavigationAction
                 label="Message"
                 value={Route.channel}
