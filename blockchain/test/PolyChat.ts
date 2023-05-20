@@ -1,8 +1,6 @@
-import { Provider } from '@ethersproject/providers'
 import { expect } from 'chai'
 import { Contract, Signer } from 'ethers'
 import { ethers } from 'hardhat'
-import { PromiseOrValue } from '../typechain-types/common'
 
 describe('ChatApp', () => {
   let chatApp: Contract
