@@ -35,7 +35,6 @@ export class ApiService {
       where: { id },
       include: { members: true },
     });
-    console.log("channel accounts:", channelData.members);
     let accountMember: IAccount[] = [];
     await Promise.all(
       await channelData.members.map(async (member) => {
@@ -52,7 +51,6 @@ export class ApiService {
         });
       })
     );
-    console.log(accountMember);
     const channel: IChannel = {
       id,
       channelName: channelData.channel_name,
@@ -104,5 +102,78 @@ export class ApiService {
       createdAt: message.created_at,
       deletedAt: message.deleted_at,
     };
+  }
+
+  //******************************* select  ******************************/
+  async getAllList(): Promise<IChannel[]> {
+    const channels = await this.prisma.channels.findMany({
+      include: { members: true },
+    });
+    let data: IChannel[] = [];
+
+    await Promise.all(
+      await channels.map(async (channel) => {
+        const _members = channel.members;
+        let accountMember: IAccount[] = [];
+
+        await Promise.all(
+          await channel.members.map(async (member) => {
+            const account = await this.prisma.accounts.findFirst({
+              where: { id: member.account_id },
+            });
+            accountMember.push({
+              id: account.id,
+              address: account.address,
+              name: account.name,
+              img: account.img,
+              createdAt: account.created_at,
+              updatedAt: account.updated_at,
+            });
+          })
+        );
+
+        const cl: IChannel = {
+          id: channel.id,
+          channelName: channel.channel_name,
+          members: accountMember,
+          totalUnread: channel.total_unread,
+          lastMessage: channel.last_message,
+          lastMessageAt: channel.last_message_at,
+        };
+        data.push(cl);
+      })
+    );
+    return [...data].sort((a, b) => b.id - a.id);
+  }
+
+  async getAllChannelMessage(id: number): Promise<IMessage[]> {
+    console.log("id:", id);
+    const messages = await this.prisma.messages.findMany({
+      where: { channel_id: +id },
+      orderBy: { id: "asc" },
+    });
+    let data: IMessage[] = [];
+
+    await Promise.all(
+      await messages.map(async (message) => {
+        const _message: IMessage = {
+          id: message.id,
+          channelId: message.channel_id,
+          accountId: message.account_id,
+          accountAddress: message.account_address,
+          contractAddress: message.account_address,
+          messageType: message.message_type,
+          txHash: message.tx_hash,
+          tokenValue: message.token_value,
+          nftTokenId: message.nft_token_id,
+          nftTokenUri: message.nft_token_id,
+          message: message.message,
+          createdAt: message.created_at,
+          deletedAt: message.deleted_at,
+        };
+        data.push(_message);
+      })
+    );
+    return data;
   }
 }

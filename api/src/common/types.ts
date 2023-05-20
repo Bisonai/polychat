@@ -23,3 +23,7 @@ export interface IHistory {
 export interface IUnreadedMessage {
   count: number;
 }
+
+export class IChannelUpldatedId {
+  id: number;
+}

@@ -4,13 +4,17 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
+  Sse,
 } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBody, ApiOperation } from "@nestjs/swagger";
 import { ApiService } from "./api.service";
 import { IAccount, IAccountCreateDto } from "./dto/accountDto";
 import { IChannel, IChannelCreateDTO } from "./dto/channelDto";
 import { IMessage, IMessageCreateDto } from "./dto/messageDto";
+import { interval, Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Controller("/api")
 export class ApiController {
@@ -51,4 +55,22 @@ export class ApiController {
   ): Promise<IMessage> {
     return await this.apiService.createMessage(_messageCreateDto);
   }
+
+  @Get("/list")
+  @ApiOperation({ operationId: "getAllList" })
+  @ApiBadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async getAllList(): Promise<IChannel[]> {
+    return await this.apiService.getAllList();
+  }
+
+  @Get("/channel/:id")
+  @ApiOperation({ operationId: "getAllList" })
+  @ApiBadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async getChannelMessages(@Param("id") id: number): Promise<IMessage[]> {
+    return await this.apiService.getAllChannelMessage(id);
+  }
 }
+
+
