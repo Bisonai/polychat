@@ -6,13 +6,13 @@
         "id": "@id",
         "type": "@type",
         "YoungBloodCredential": {
-          "@id": "https://raw.githubusercontent.com/bisonai/polychat/main/json-ld/YoungBloodDAO.json-ld#YoungBloodCredential",
+          "@id": "https://raw.githubusercontent.com/Bisonai/polychat/main/json-ld/YoungBloodDAO.json-ld#YoungBloodCredential",
           "@context": {
             "@version": 1.1,
             "@protected": true,
             "id": "@id",
             "type": "@type",
-            "vocab": "https://github.com/bisonai/polychat/blob/main/schemas/vocab/YoungBloodDAO.md#",
+            "vocab": "https://github.com/Bisonai/polychat/blob/main/schemas/vocab/YoungBloodDAO.md#",
             "xsd": "http://www.w3.org/2001/XMLSchema#",
             "admissionDate": {
               "@id": "vocab:admissionDate",

@@ -3,7 +3,7 @@
     "type": "object",
     "$metadata": {
       "uris": {
-        "jsonLdContext": "https://raw.githubusercontent.com/bisonai/polychat/main/schemas/json-ld/YoungBloodDAO.json-ld",
+        "jsonLdContext": "https://raw.githubusercontent.com/Bisonai/polychat/main/schemas/json-ld/YoungBloodDAO.json-ld#YoungBloodCredential",
         "jsonSchema": "https://raw.githubusercontent.com/bisonai/polychat/main/schemas/json/YoungBloodDAO.json"
       }
     },
