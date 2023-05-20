@@ -25,7 +25,6 @@ export default function LabelBottomNavigation() {
 
     React.useEffect(() => {
         const route = getRouteFromUrl();
-        console.log("route", route);
         setValue(route);
     }, []);
 
