@@ -4,8 +4,9 @@ import { Grid } from "@mui/material";
 import { useEffect } from "react";
 import { BE_URL } from "@src/lib/constants";
 import { useQuery } from "react-query";
-import { getAccount } from "@src/lib/api";
+import { createAccount, getAccount } from "@src/lib/api";
 import { useAccount } from "wagmi";
+import { getRandomProfileImage } from "@src/lib/utils";
 
 export const AfterLogin = ({ children }) => {
     const { isConnected, address } = useAccount();
@@ -14,7 +15,16 @@ export const AfterLogin = ({ children }) => {
     });
 
     useEffect(() => {
-        if (isConnected) {
+        if (address && !accountQuery?.data?.address) {
+            createAccount({
+                id: undefined,
+                address,
+                name: "",
+                img: getRandomProfileImage(address),
+            }).then((res) => {
+                accountQuery.refetch();
+            });
+        } else if (isConnected) {
             accountQuery.refetch();
         }
     }, [isConnected]);

@@ -1,11 +1,12 @@
 import { Button, Grid, MobileStepper, Typography } from "@mui/material";
 import React, { useEffect } from "react";
-import { useConnect } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { connecters } from "@src/lib/utils";
 
 export const LandingTemplate = () => {
     const [activeStep, setActiveStep] = React.useState(0);
     const { connect, error, isLoading, pendingConnector } = useConnect();
+    const { address } = useAccount();
 
     const handlePrev = () => {
         setActiveStep((prevActiveStep) => Math.max(prevActiveStep - 1, 0));
@@ -20,8 +21,6 @@ export const LandingTemplate = () => {
             connector,
         });
     };
-
-    // useEffect
 
     return (
         // Center
