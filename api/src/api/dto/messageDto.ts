@@ -1,5 +1,6 @@
 import { OmitType } from "@nestjs/swagger";
 import { Decimal } from "@prisma/client/runtime";
+import { IAccount } from "./accountDto";
 
 export interface IMessage {
   id: bigint;
@@ -7,6 +8,7 @@ export interface IMessage {
   accountId: number;
   accountAddress?: string;
   contractAddress?: string;
+  account?: IAccount;
   messageType: IMessageType;
   txHash?: string;
   tokenValue?: Decimal;
