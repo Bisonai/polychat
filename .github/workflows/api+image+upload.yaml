@@ -9,7 +9,7 @@ on:
 
 env:
   ecr_url: public.ecr.aws/bisonai/glitch
-  role_arn: arn:aws:iam::831311642255:oidc-provider/token.actions.githubusercontent.com
+  role_arn: arn:aws:iam::831311642255:role/orakl_ecr_github_upload
 
 jobs:
   prepare:
@@ -51,14 +51,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Docker build cinder-glitch
-        run:  docker-compose -f api/docker-compose.build.yaml build
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
           role-to-assume: ${{ env.role_arn }}
+
+      - name: Docker build cinder-glitch
+        run:  docker-compose -f api/docker-compose.build.yaml build
+
+
 
       - name: Login to Amazon ECR
         id: login-ecr-public
