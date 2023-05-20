@@ -122,7 +122,7 @@ export default function TopNavigation() {
                         component="div"
                         sx={{ display: { xs: "none", sm: "block" } }}
                     >
-                        polyCHAT
+                        <img src="/images/nav-logo.png" alt="logo" width={100} height={39} />
                     </Typography>
 
                     <Box sx={{ flexGrow: 1 }} />
