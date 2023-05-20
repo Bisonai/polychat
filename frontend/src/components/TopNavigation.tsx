@@ -96,10 +96,10 @@ export default function TopNavigation() {
                 <p>Profile</p>
             </MenuItem> */}
             <MenuItem>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="error">
-                        <MailIcon />
-                    </Badge>
+                <IconButton size="large" aria-label="show messenger" color="inherit">
+                    {/* <Badge badgeContent={0} color="error"> */}
+                    <MailIcon />
+                    {/* </Badge> */}
                 </IconButton>
                 <p>Messages</p>
             </MenuItem>
@@ -140,13 +140,13 @@ export default function TopNavigation() {
                         </IconButton>
                         <IconButton
                             size="large"
-                            aria-label="show 4 new mails"
+                            aria-label="show messenger"
                             color="inherit"
                             onClick={() => router.push(routes.channel)}
                         >
-                            <Badge badgeContent={4} color="error">
-                                <MailIcon />
-                            </Badge>
+                            {/* <Badge badgeContent={4} color="error"> */}
+                            <MailIcon />
+                            {/* </Badge> */}
                         </IconButton>
 
                         <IconButton

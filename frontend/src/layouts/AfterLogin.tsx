@@ -11,14 +11,14 @@ import { getRandomProfileImage } from "@src/lib/utils";
 export const AfterLogin = ({ children }) => {
     const { isConnected, address } = useAccount();
     const accountQuery = useQuery(["account"], {
-        queryFn: () => getAccount(address),
+        queryFn: () => getAccount(address.toLowerCase()),
     });
 
     useEffect(() => {
         if (address && !accountQuery?.data?.address) {
             createAccount({
                 id: undefined,
-                address,
+                address: address.toLowerCase(),
                 name: "",
                 img: getRandomProfileImage(address),
             }).then((res) => {
