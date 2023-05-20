@@ -16,10 +16,14 @@ export const LandingTemplate = () => {
     };
     const handleSelectWallet = (walletName: string) => {
         const connector = connecters.Metamask;
-        connect({
-            chainId: 80001,
-            connector,
-        });
+        if (window?.ethereum) {
+            connect({
+                chainId: 80001,
+                connector,
+            });
+        } else {
+            window.location.href = `https://metamask.app.link/dapp/polychat.in/`;
+        }
     };
 
     return (

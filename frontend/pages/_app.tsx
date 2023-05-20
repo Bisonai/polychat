@@ -15,6 +15,9 @@ import { CheckLogin } from "@src/layouts/CheckLogin";
 import { connecters } from "@src/lib/utils";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Moralis from "moralis";
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
+
 const { chains, publicClient, webSocketPublicClient } = configureChains(
     [polygonMumbai],
     [
@@ -38,7 +41,7 @@ const config = createConfig({
 
 if (!Moralis.Core.isStarted) {
     const settings = {
-        apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+        apiKey: publicRuntimeConfig.NEXT_PUBLIC_MORALIS_API_KEY,
     };
     Moralis.start(settings);
 }
