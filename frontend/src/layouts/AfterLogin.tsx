@@ -19,7 +19,7 @@ export const AfterLogin = ({ children }) => {
             createAccount({
                 id: undefined,
                 address: address.toLowerCase(),
-                name: "",
+                name: undefined,
                 img: getRandomProfileImage(address),
             }).then((res) => {
                 accountQuery.refetch();
@@ -31,10 +31,17 @@ export const AfterLogin = ({ children }) => {
 
     return (
         <Grid>
-            <Grid>
+            <Grid
+                sx={{
+                    position: "fixed",
+                    top: 0,
+                    width: "100%",
+                    zIndex: 1000,
+                }}
+            >
                 <TopNavigation />
             </Grid>
-            {children}
+            <Grid paddingTop={"56px"}>{children}</Grid>
             <Grid sx={{ position: "fixed", bottom: 0, width: "100%" }}>
                 <BottomNavigation />
             </Grid>

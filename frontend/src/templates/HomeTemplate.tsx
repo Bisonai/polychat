@@ -354,7 +354,7 @@ export const HomeTemplate = (): ReactElement => {
     }, [isConnected]);
 
     return (
-        <Grid sx={{ p: 2, background: "#E2E2E8", height: "100vh" }}>
+        <Grid sx={{ p: 2, background: "#E2E2E8", minHeight: "calc(100vh - 112px)" }}>
             {requestNativeTokensQuery.isFetching ? (
                 <Skeleton height={218} />
             ) : (

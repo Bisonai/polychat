@@ -83,7 +83,7 @@ export default function TopNavigation() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            {/* <MenuItem onClick={handleProfile}>
+            <MenuItem onClick={handleProfile}>
                 <IconButton
                     size="large"
                     aria-label="account of current user"
@@ -94,7 +94,7 @@ export default function TopNavigation() {
                     <AccountCircle />
                 </IconButton>
                 <p>Profile</p>
-            </MenuItem> */}
+            </MenuItem>
             <MenuItem>
                 <IconButton size="large" aria-label="show messenger" color="inherit">
                     {/* <Badge badgeContent={0} color="error"> */}
