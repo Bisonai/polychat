@@ -55,3 +55,8 @@ export const getMessages = async (channelId: string): Promise<IMessage[]> => {
     const response = await fetch(`${BE_URL}/api/channel/${channelId}`);
     return await response.json();
 };
+
+export const getAccounts = async (): Promise<IAccount[]> => {
+    const response = await fetch(`${BE_URL}/api/accounts`);
+    return await response.json();
+};

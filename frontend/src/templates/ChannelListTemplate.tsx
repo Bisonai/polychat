@@ -6,12 +6,13 @@ import {
     Grid,
     IconButton,
     Modal,
+    Skeleton,
     SpeedDialIcon,
     TextField,
     Typography,
     styled,
 } from "@mui/material";
-import { createChannel, getChannels } from "@src/lib/api";
+import { createChannel, getAccounts, getChannels } from "@src/lib/api";
 import { ReactElement, useRef, useState } from "react";
 import { useQuery } from "wagmi";
 import SpeedDial from "@mui/material/SpeedDial";
@@ -46,15 +47,15 @@ const modalStyle = {
 export const ChannelListTemplate = (): ReactElement => {
     const [openCreateChannelModal, setOpenCreateChannelModal] = useState<boolean>(false);
     const textInputRef = useRef<HTMLInputElement>(null);
-    const [members, setMembers] = useState<number[]>([]);
+    const [memberIDs, setMemberIDs] = useState<number[]>([]);
 
     const channelQuery = useQuery(["channels"], {
         queryFn: getChannels,
     });
 
-    const updateMembers = (memberId: number) => {
-        const newMembers = members.push(memberId);
-    };
+    const accountsQuery = useQuery(["accounts"], {
+        queryFn: getAccounts,
+    });
 
     const handleCreateChannelClicked = () => {
         console.log("handleCreateChannelClicked");
@@ -63,9 +64,11 @@ export const ChannelListTemplate = (): ReactElement => {
 
     const handleCreateButtonClicked = async () => {
         const name = textInputRef.current.value ?? " ";
+
+        console.log("create channel, memberIds: ", memberIDs);
         const newChannelInfo: IChannelCreateDTO = {
             channelName: name,
-            members: members,
+            members: memberIDs,
         };
 
         await createChannel(newChannelInfo)
@@ -76,6 +79,11 @@ export const ChannelListTemplate = (): ReactElement => {
             .catch((err) => {
                 console.log(err);
             });
+    };
+    const handleSelectMember = (memberId: number) => {
+        const newMemberIds = [...memberIDs, memberId];
+
+        setMemberIDs(newMemberIds);
     };
 
     const renderCreateChannelModal = () => (
@@ -91,7 +99,14 @@ export const ChannelListTemplate = (): ReactElement => {
                     label="Title"
                     variant="outlined"
                 />
-                <SelectForm channelQuery={channelQuery as any}></SelectForm>
+                {accountsQuery.isFetching ? (
+                    <Skeleton />
+                ) : (
+                    <SelectForm
+                        accounts={accountsQuery.data}
+                        handleSelectMember={handleSelectMember}
+                    ></SelectForm>
+                )}
                 <Button
                     sx={{
                         width: 140,
