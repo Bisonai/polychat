@@ -210,4 +210,22 @@ export class ApiService {
     return account;
     
   }
-}
+
+  async findAllAccount(): Promise<IAccount[]> {
+    const accounts = await this.prisma.accounts.findMany({orderBy:{id:'desc'}});
+    let data: IAccount[] = [];
+    accounts.map((account) => {
+      const _account: IAccount = {
+        id: account.id,
+        name: account.name,
+        img: account.img,
+        address: account.address,
+        createdAt: account.created_at,
+        updatedAt: account.updated_at
+      }
+      data.push(_account);     
+    })
+
+    return data;
+    }
+  }

@@ -73,6 +73,14 @@ export class ApiController {
     return await this.apiService.getAllChannelMessage(id);
   }
 
+  @Get("/accounts")
+  @ApiOperation({ operationId: "getAllAccountList" })
+  @ApiBadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async getAllAccounts(): Promise<IAccount[]> {
+    return await this.apiService.findAllAccount();
+  }  
+
   @Get("/account/:address")
   @ApiOperation({ operationId: "getAllList" })
   @ApiBadRequestResponse()
@@ -80,6 +88,9 @@ export class ApiController {
   async getAccountByAddress(@Param("address") address: string): Promise<IAccount> {
     return await this.apiService.findOneAccount(address);
   }  
+
+
+
 }
 
 
