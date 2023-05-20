@@ -1,1 +1,1 @@
-export const todo = 1
+export const BE_URL = 'http://localhost:8888';

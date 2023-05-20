@@ -1,0 +1,121 @@
+Arguments: 
+  /Users/hpark16/.nvm/versions/node/v18.12.1/bin/node /Users/hpark16/.nvm/versions/node/v16.11.1/bin/yarn
+
+PATH: 
+  /Users/hpark16/.nvm/versions/node/v18.12.1/bin:/Users/hpark16/.nvm/versions/node/v18.12.1/bin:/Users/hpark16/.nvm/versions/node/v16.11.1/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/System/Cryptexes/App/usr/bin:/bin:/Library/Apple/usr/bin:/opt/homebrew/opt/ruby@3.0/bin:/opt/homebrew/lib/ruby/gems/3.0.0/bin:/Users/hpark16/.nvm/versions/node/v16.11.1/bin:/Users/hpark16/.local/bin:/Users/hpark16/.dotfiles/bin:/Users/hpark16/.yarn/bin:/Users/hpark16/.fzf/bin:/Users/hpark16/.cargo/bin:/Users/hpark16/.go/bin:/Users/hpark16/.go/packages/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/sbin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.12.1
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://bisonai-831311642255.d.codeartifact.us-west-2.amazonaws.com/npm/bisonai/@nestjs%2fcommon: Unauthenticated: request used expired credentials. Please renew your credentials.
+      at params.callback [as _callback] (/Users/hpark16/.nvm/versions/node/v16.11.1/lib/node_modules/yarn/lib/cli.js:66145:18)
+      at self.callback (/Users/hpark16/.nvm/versions/node/v16.11.1/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/Users/hpark16/.nvm/versions/node/v16.11.1/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at Gunzip.<anonymous> (/Users/hpark16/.nvm/versions/node/v16.11.1/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at Gunzip.emit (node:events:513:28)
+      at endReadableNT (node:internal/streams/readable:1359:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+npm manifest: 
+  {
+    "name": "@bisonai/orakl-monitor",
+    "version": "0.0.1",
+    "description": "Orakl Network Monitoring System",
+    "author": "Bisonai",
+    "license": "UNLICENSED",
+    "scripts": {
+      "prebuild": "rimraf dist",
+      "build": "nest build",
+      "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+      "start": "nest start",
+      "start:dev": "nest start --watch",
+      "start:debug": "nest start --debug --watch",
+      "start:prod": "npx prisma migrate deploy && node dist/main",
+      "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+      "test": "jest",
+      "test:watch": "jest --watch",
+      "test:cov": "jest --coverage",
+      "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+      "test:e2e": "jest --config ./test/jest-e2e.json"
+    },
+    "dependencies": {
+      "@nestjs/common": "^9.0.0",
+      "@nestjs/config": "^2.3.1",
+      "@nestjs/core": "^9.0.5",
+      "@nestjs/event-emitter": "^1.4.1",
+      "@nestjs/platform-express": "^9.0.0",
+      "@nestjs/platform-socket.io": "^9.4.1",
+      "@nestjs/schedule": "^2.2.1",
+      "@nestjs/swagger": "^6.3.0",
+      "@nestjs/websockets": "^9.4.1",
+      "@prisma/client": "^4.14.1",
+      "bn.js": "^5.2.1",
+      "cbor": "^8.1.0",
+      "cmd-ts": "^0.11.0",
+      "dotenv": "^16.0.3",
+      "elliptic": "^6.5.4",
+      "mathjs": "^11.4.0",
+      "nestjs-prisma": "^0.20.0",
+      "pg": "^8.11.0",
+      "reflect-metadata": "^0.1.13",
+      "rxjs": "^7.5.5"
+    },
+    "devDependencies": {
+      "@jest/globals": "^29.3.1",
+      "@nestjs/cli": "^9.0.0",
+      "@nestjs/schematics": "^9.0.0",
+      "@nestjs/testing": "^9.0.0",
+      "@types/express": "^4.17.13",
+      "@types/jest": "^28.1.4",
+      "@types/node": "^18.0.3",
+      "@types/supertest": "^2.0.12",
+      "@typescript-eslint/eslint-plugin": "^5.30.5",
+      "@typescript-eslint/parser": "^5.30.5",
+      "eslint": "^8.19.0",
+      "eslint-config-prettier": "^8.5.0",
+      "eslint-plugin-prettier": "^4.2.1",
+      "husky": "^8.0.2",
+      "jest": "^28.1.2",
+      "prettier": "^2.7.1",
+      "source-map-support": "^0.5.21",
+      "supertest": "^6.2.4",
+      "ts-jest": "^28.0.5",
+      "ts-loader": "^9.3.1",
+      "ts-node": "^10.8.2",
+      "tsconfig-paths": "^4.0.0",
+      "typescript": "^4.7.4"
+    },
+    "jest": {
+      "moduleFileExtensions": [
+        "js",
+        "json",
+        "ts"
+      ],
+      "rootDir": "src",
+      "testRegex": ".*\\.spec\\.ts$",
+      "transform": {
+        "^.+\\.(t|j)s$": "ts-jest"
+      },
+      "collectCoverageFrom": [
+        "**/*.(t|j)s"
+      ],
+      "coverageDirectory": "../coverage",
+      "testEnvironment": "node"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

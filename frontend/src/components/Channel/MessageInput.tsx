@@ -52,7 +52,13 @@ import Image from "next/image";
 import axios from "axios";
 import { ethers } from "ethers";
 
-export default function MessageInput({ channelId }: { channelId: string }) {
+export default function MessageInput({
+    members,
+    channelId,
+}: {
+    members: Omit<IAccount, "createdAt" | "updatedAt" | "img">[];
+    channelId: string;
+}) {
     const [open, setOpen] = React.useState(false);
     const [sendType, setSendType] = React.useState("");
     const handleSendMessage = (event: any) => {
@@ -114,7 +120,11 @@ export default function MessageInput({ channelId }: { channelId: string }) {
 
                     <CardContent>
                         {sendType ? (
-                            <SendStepper isNFT={sendType === "NFT"} channelId={channelId} />
+                            <SendStepper
+                                isNFT={sendType === "NFT"}
+                                channelId={channelId}
+                                members={members}
+                            />
                         ) : (
                             <ButtonGroup orientation="vertical" variant="outlined" fullWidth>
                                 <Button
@@ -167,7 +177,15 @@ export default function MessageInput({ channelId }: { channelId: string }) {
     );
 }
 
-export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: boolean }) => {
+export const SendStepper = ({
+    members,
+    channelId,
+    isNFT,
+}: {
+    members: Omit<IAccount, "createdAt" | "updatedAt" | "img">[];
+    channelId: string;
+    isNFT: boolean;
+}) => {
     const stepMap = {
         "0": "Select User",
         "1": `${isNFT ? "Select NFT" : "Select Token"}`,
@@ -180,36 +198,6 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
     const [amount, setAmount] = React.useState(0);
     const [err, setErr] = React.useState("");
     const [txHash, setTxHash] = React.useState("");
-    // TODO: Get Participants of the channel
-    const members: IAccount[] = [
-        {
-            id: 1,
-            name: "Baram",
-            imgUrl: "/static/images/avatar/1.jpg",
-            address: "0x2031832e54a2200bF678286f560F49A950DB2Ad5",
-            polygonId: "0x2031832e54a2200bF678286f560F49A950DB2Ad5",
-            createdAt: "1634175600",
-            updatedAt: "1634175600",
-        },
-        {
-            id: 2,
-            name: "Bryan",
-            imgUrl: "/static/images/avatar/2.jpg",
-            polygonId: "0x5aEcC9617cC5A4De21BaFFFEa16153eeB7A2ac14",
-            address: "0x5aEcC9617cC5A4De21BaFFFEa16153eeB7A2ac14",
-            createdAt: "1634175600",
-            updatedAt: "1634175600",
-        },
-        {
-            id: 3,
-            name: "Cindy Baker",
-            imgUrl: "/static/images/avatar/3.jpg",
-            polygonId: "0x388C818CA8B9251b393131C08a736A67ccB19291",
-            address: "0x388C818CA8B9251b393131C08a736A67ccB39297",
-            createdAt: "1634175600",
-            updatedAt: "1634175600",
-        },
-    ];
     const { address, connector } = useAccount();
 
     const requestNFTsQuery = useQuery(["nfts", address], {
@@ -460,7 +448,9 @@ export const NFTList = ({
                             }
                             secondary={
                                 <Typography variant="body2" color="text.secondary">
-                                    {shortenAddress(nft.tokenAddress.toJSON())}
+                                    {nft?.tokenAddress
+                                        ? shortenAddress(nft?.tokenAddress?.toJSON() || "")
+                                        : ""}
                                 </Typography>
                             }
                         />
@@ -582,40 +572,43 @@ export const TokenList = ({
                             </ListItemButton>
                         </ListItem>
                     )}
-                    {tokens.map((erc20Value, key) => {
-                        const token = erc20Value.token;
-                        return (
-                            <ListItem
-                                onClick={() => setSelectedToken(erc20Value)}
-                                key={key}
-                                disablePadding
-                            >
-                                <ListItemButton>
-                                    <ListItemAvatar>
-                                        <Avatar alt={token.name} src={token.thumbnail} />
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={
-                                            <>
-                                                <Typography>{token.name}</Typography>
-                                                <Typography>
-                                                    {parseFloat(
-                                                        formatUnits(erc20Value.amount.toBigInt()),
-                                                    ).toFixed(3)}{" "}
-                                                    {token.symbol}
+                    {tokens.length &&
+                        tokens.map((erc20Value, key) => {
+                            const token = erc20Value.token;
+                            return (
+                                <ListItem
+                                    onClick={() => setSelectedToken(erc20Value)}
+                                    key={key}
+                                    disablePadding
+                                >
+                                    <ListItemButton>
+                                        <ListItemAvatar>
+                                            <Avatar alt={token.name} src={token.thumbnail} />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={
+                                                <>
+                                                    <Typography>{token.name}</Typography>
+                                                    <Typography>
+                                                        {parseFloat(
+                                                            formatUnits(
+                                                                erc20Value.amount.toBigInt(),
+                                                            ),
+                                                        ).toFixed(3)}{" "}
+                                                        {token.symbol}
+                                                    </Typography>
+                                                </>
+                                            }
+                                            secondary={
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {shortenAddress(token.contractAddress.toJSON())}
                                                 </Typography>
-                                            </>
-                                        }
-                                        secondary={
-                                            <Typography variant="body2" color="text.secondary">
-                                                {shortenAddress(token.contractAddress.toJSON())}
-                                            </Typography>
-                                        }
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                        );
-                    })}
+                                            }
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            );
+                        })}
                 </>
             )}
         </List>

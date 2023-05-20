@@ -5,7 +5,9 @@ import { Grid } from "@mui/material";
 export const AfterLogin = ({ children }) => {
     return (
         <Grid>
-            <TopNavigation />
+            <Grid>
+                <TopNavigation />
+            </Grid>
             {children}
             <Grid sx={{ position: "fixed", bottom: 0, width: "100%" }}>
                 <BottomNavigation />
