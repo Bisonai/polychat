@@ -12,7 +12,12 @@ const nextConfig = {
         NEXT_PUBLIC_MORALIS_API_KEY:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjIzNTFkMmFjLTZmYTktNGFmYy05NTRhLWVmYzRiNTE1ODNhYSIsIm9yZ0lkIjoiMzM1MjUzIiwidXNlcklkIjoiMzQ0NzAxIiwidHlwZUlkIjoiOGExYmE3Y2YtZDk0ZS00NTAyLWExMjktNzkwMjg0ZmU4ZmVhIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODQ1OTQ0NTMsImV4cCI6NDg0MDM1NDQ1M30.xOaEEQY4IdiolrQQ6aPD8O-rEVbBpPBFwwsdtVqM-5k",
         NEXT_PUBLIC_BE_URL: "https://api.polychat.in",
+<<<<<<< Updated upstream
         COINMARKETCAP_KEY: "80edf3ae-f2a6-4b84-898b-23183a6571c9",
+||||||| Stash base
+=======
+        // NEXT_PUBLIC_BE_URL: "http://localhost:8888",
+>>>>>>> Stashed changes
     },
     serverRuntimeConfig: {
         COINMARKETCAP_KEY: "bbf97f97-5dce-411c-80b4-29149f2e3423",

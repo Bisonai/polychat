@@ -12,45 +12,32 @@ import {
     Card,
     CardContent,
     CardHeader,
-    Checkbox,
     CircularProgress,
     Divider,
-    FilledInput,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
     Grid,
     Input,
     InputAdornment,
     InputBase,
-    InputLabel,
     List,
     ListItem,
     ListItemAvatar,
     ListItemButton,
     ListItemText,
-    MenuItem,
     Modal,
-    Radio,
-    RadioGroup,
-    Select,
     Skeleton,
     Step,
     StepLabel,
     Stepper,
-    TextField,
     Typography,
 } from "@mui/material";
 import { IAccount, IMessageType } from "@src/types";
-import { Connector, useAccount, useBalance, useQuery } from "wagmi";
+import { useAccount, useBalance, useQuery } from "wagmi";
 import Moralis from "moralis";
 import { Erc20Token, Erc20Value, EvmChain, EvmNft } from "moralis/common-evm-utils";
 import { getRandomProfileImage, sendNFT, sendToken, shortenAddress } from "@src/lib/utils";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { formatUnits } from "ethers/lib/utils";
 import Image from "next/image";
 import axios from "axios";
-import { ethers } from "ethers";
 import { createMessage } from "@src/lib/api";
 import MonetizationOn from "@mui/icons-material/MonetizationOn";
 
@@ -66,7 +53,6 @@ export default function MessageInput({
     const { address, connector } = useAccount();
     const [text, setText] = React.useState("");
     const [loading, setLoading] = React.useState(false);
-
     const accountId = members?.find((m) => m.address?.toLowerCase() === address?.toLowerCase())?.id;
     const handleSendMessage = async () => {
         if (text.toString().trim() === "") {

@@ -1,9 +1,8 @@
 import MessageInput from "@components/Channel/MessageInput";
 import { MessageList } from "@components/Channel/MessageList";
-import { Box, Divider, Grid } from "@mui/material";
-import { getMessages } from "@src/lib/api";
+import { Divider, Grid } from "@mui/material";
+import { getChannels, getMessages } from "@src/lib/api";
 import { BE_URL } from "@src/lib/constants";
-import { shortenAddress } from "@src/lib/utils";
 import { ReactElement, useEffect } from "react";
 import { useQuery } from "react-query";
 
@@ -15,19 +14,13 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
     const messageQuery = useQuery(["messages", channelId], {
         queryFn: () => getMessages(channelId),
     });
-
+    const channelQuery = useQuery(["channels"], {
+        queryFn: getChannels,
+    });
+    const allChannels = channelQuery?.data || [];
+    const currentChannel = allChannels.find((channel) => channel.id.toString() == channelId);
     const messages = messageQuery?.data || [];
-    const membersMap = messages
-        .map((m) => ({
-            id: m.accountId,
-            name: m?.account?.name || "",
-            address: m.accountAddress,
-        }))
-        .reduce((accMap, cur) => {
-            accMap[cur.address] = cur;
-            return accMap;
-        }, {} as Record<string, { id: number; name: string; address: string }>);
-    const members = Object.values(membersMap);
+    const members = currentChannel.members;
     useEffect(() => {
         if (channelId) {
             if (window?.messageEvent) {
