@@ -6,6 +6,7 @@ import {
     Grid,
     IconButton,
     Input,
+    Modal,
     Skeleton,
     Snackbar,
     Typography,
@@ -21,6 +22,7 @@ import Moralis from "moralis";
 import { EvmChain } from "moralis/common-evm-utils";
 import { getTokenPercentChangeIn24h, getTokenPriceInUSD, isEmpty } from "../lib/utils";
 import { formatUnits } from "ethers/lib/utils";
+import QRCode from "react-qr-code";
 
 export const HomeTemplate = (): ReactElement => {
     const { isConnected, address } = useAccount();
@@ -28,9 +30,29 @@ export const HomeTemplate = (): ReactElement => {
     const [listOfPrice, setListOfPrice] = useState();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     const [editName, setEditName] = useState<boolean>(false);
+    const [openQRModal, setOpenQRModal] = useState<boolean>(false);
 
     const handleSnackbarClose = () => {
         setOpenSnackbar(false);
+    };
+
+    const handleQRModalTriggered = () => {
+        setOpenQRModal(!openQRModal);
+    };
+
+    const handleWithdrawButtonClicked = () => {
+        // TODO: Choose select users and tokens to send
+    };
+
+    const modalStyle = {
+        position: "absolute" as const,
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 400,
+        bgcolor: "background.paper",
+        boxShadow: 24,
+        p: 4,
     };
 
     const requestNativeTokensQuery = useQuery(["NativeTokens", address], {
@@ -257,6 +279,7 @@ export const HomeTemplate = (): ReactElement => {
                             background: "#F0F1FF",
                         }}
                         variant="contained"
+                        onClick={handleQRModalTriggered}
                     >
                         {"Receive"}
                     </Button>
@@ -303,7 +326,7 @@ export const HomeTemplate = (): ReactElement => {
     return (
         <Grid sx={{ p: 2, background: "#E2E2E8", height: "100vh" }}>
             {requestNativeTokensQuery.isFetching ? (
-                <Skeleton />
+                <Skeleton height={218} />
             ) : (
                 <MainDashboard
                     name={"Bryan's Wallet"}
@@ -330,6 +353,21 @@ export const HomeTemplate = (): ReactElement => {
                     Address is successfully copied!
                 </Alert>
             </Snackbar>
+            <Modal
+                open={openQRModal}
+                onClose={handleQRModalTriggered}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={modalStyle}>
+                    <QRCode
+                        size={256}
+                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                        value={address}
+                        viewBox={`0 0 256 256`}
+                    />
+                </Box>
+            </Modal>
         </Grid>
     );
 };
