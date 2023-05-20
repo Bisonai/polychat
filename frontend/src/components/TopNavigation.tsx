@@ -17,6 +17,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { IChannel } from "@src/types";
 import { getChannels } from "@src/lib/api";
 import { ParsedUrlQuery } from "querystring";
+import Link from "next/link";
 
 export default function TopNavigation() {
     const { disconnect } = useDisconnect();
@@ -80,18 +81,18 @@ export default function TopNavigation() {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar sx={{ justifyContent: "space-between" }}>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: "none", sm: "block" } }}
-                    >
+                    <Link href={routes.home}>
                         <img src="/images/nav-logo.png" alt="logo" width={100} height={39} />
-                    </Typography>
+                    </Link>
                     {channelQuery.isFetching ? (
                         <div></div>
                     ) : (
-                        <Typography>
+                        <Typography
+                            maxWidth={"150px"}
+                            textOverflow={"ellipsis"}
+                            overflow={"hidden"}
+                            whiteSpace={"nowrap"}
+                        >
                             {
                                 getCurrentChannel(
                                     channelQuery.data,

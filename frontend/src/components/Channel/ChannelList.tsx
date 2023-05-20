@@ -12,6 +12,7 @@ import { UseQueryResult } from "react-query";
 import { Box, Grid, Skeleton } from "@mui/material";
 import { getRandomProfileImage, shortenAddress } from "@src/lib/utils";
 import { useAccount } from "wagmi";
+import moment from "moment";
 
 export default function ChannelList({
     channelQuery,
@@ -62,28 +63,52 @@ export default function ChannelList({
                             <ListItemText
                                 primary={chatList.channelName || "No name"}
                                 secondary={
-                                    <Box>
-                                        <Typography
-                                            sx={{ display: "inline" }}
-                                            component="span"
-                                            variant="body2"
-                                            color="text.primary"
-                                        >
-                                            {chatList.members
-                                                .filter(
-                                                    (member) =>
-                                                        member.address?.toLowerCase() !==
-                                                        address?.toLowerCase(),
-                                                )
-                                                .map(
-                                                    (member) =>
-                                                        member.name ||
-                                                        shortenAddress(member.address, 2),
-                                                )
-                                                .join(", ")}
-                                        </Typography>
-                                        {` — ${chatList.lastMessage || "(empty chat)"}`}
-                                    </Box>
+                                    <Grid container>
+                                        <Box textOverflow={"ellipsis"} display={"flex"}>
+                                            <Typography
+                                                sx={{ display: "inline-block" }}
+                                                component="div"
+                                                variant="body2"
+                                                color="text.primary"
+                                                maxWidth={"100px"}
+                                                textOverflow={"ellipsis"}
+                                                overflow={"hidden"}
+                                            >
+                                                {chatList.members
+                                                    .filter(
+                                                        (member) =>
+                                                            member.address?.toLowerCase() !==
+                                                            address?.toLowerCase(),
+                                                    )
+                                                    .map(
+                                                        (member) =>
+                                                            member.name ||
+                                                            shortenAddress(member.address, 2),
+                                                    )
+                                                    .join(", ")}
+                                            </Typography>
+                                            <Typography
+                                                sx={{ display: "inline-block" }}
+                                                component="div"
+                                                maxWidth={"250px"}
+                                                variant="body2"
+                                            >
+                                                {` — ${chatList.lastMessage || "(empty chat)"}`}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ flexGrow: 1 }} maxWidth={"150px"} />
+                                        <Box>
+                                            <Typography
+                                                sx={{ display: "inline" }}
+                                                component="span"
+                                                variant="body2"
+                                                color={"#9e9e9e"}
+                                            >
+                                                {chatList.lastMessageAt &&
+                                                    moment(chatList.lastMessageAt).fromNow()}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
                                 }
                             />
                         </ListItem>
