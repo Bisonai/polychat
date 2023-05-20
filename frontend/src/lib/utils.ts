@@ -4,6 +4,11 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 // import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { polygonMumbai } from "@wagmi/core/chains";
 import Moralis from 'moralis'
+import { EvmNft } from "moralis/common-evm-utils";
+import { Connector } from "wagmi";
+import ERC20Abi from "@src/lib/abi/ERC20.json";
+import ERC721Abi from "@src/lib/abi/ERC721.json";
+import { ethers } from 'ethers'
 
 const chains = [polygonMumbai]
 const metaMaskConnector = new MetaMaskConnector({ chains })
@@ -31,4 +36,20 @@ export const shortenAddress = (address: string, chars = 5) => {
         address.length - chars,
         address.length
     )}`
+}
+
+
+export const sendNFT = async (connector: Connector, nft: EvmNft, to: string) => {
+    // SEND ERC721 NFT
+    const provider = await connector.getProvider({ chainId: 80001 })
+    const contract = new ethers.Contract(nft.tokenAddress.toJSON(), ERC721Abi.abi, provider)
+    const nftContract = contract.connect(provider.getSigner())
+    return nftContract.safeTransferFrom(provider.getSigner().getAddress(), to, nft.tokenId)
+}
+
+
+export const sendToken = async (connector: Connector, nft: EvmNft, to: string) => {
+    // SEND ERC721 NFT
+
+
 }

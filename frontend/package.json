@@ -41,7 +41,7 @@
         "babel-plugin-module-resolver": "^4.1.0",
         "crypto-js": "^4.1.1",
         "date-fns": "^2.28.0",
-        "ethers": "^6.3.0",
+        "ethers": "5.7.2",
         "immer": "^9.0.12",
         "jsonwebtoken": "^8.5.1",
         "merkletreejs": "^0.3.9",

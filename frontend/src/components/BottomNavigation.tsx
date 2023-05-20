@@ -1,9 +1,9 @@
 import * as React from "react";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import FolderIcon from "@mui/icons-material/Folder";
-import RestoreIcon from "@mui/icons-material/Restore";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import ChatIcon from "@mui/icons-material/Chat";
+import HomeIcon from "@mui/icons-material/Home";
 import { Route, routes } from "@src/lib/route";
 import { useRouter } from "next/router";
 
@@ -30,9 +30,19 @@ export default function LabelBottomNavigation() {
 
     return (
         <BottomNavigation value={value} onChange={handleChange}>
-            <BottomNavigationAction label="Home" value={Route.home} icon={<FolderIcon />} />
-            <BottomNavigationAction label="Message" value={Route.channel} icon={<FavoriteIcon />} />
-            <BottomNavigationAction label="History" value={Route.history} icon={<RestoreIcon />} />
+            <BottomNavigationAction label="Home" value={Route.home} icon={<HomeIcon />} showLabel />
+            <BottomNavigationAction
+                label="Message"
+                value={Route.channel}
+                icon={<ChatIcon />}
+                showLabel
+            />
+            <BottomNavigationAction
+                label="History"
+                value={Route.history}
+                icon={<SwapHorizIcon />}
+                showLabel
+            />
         </BottomNavigation>
     );
 }
