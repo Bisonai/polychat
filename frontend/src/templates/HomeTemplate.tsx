@@ -11,26 +11,36 @@ import {
     Snackbar,
     Typography,
 } from "@mui/material";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import MonetizationOn from "@mui/icons-material/MonetizationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import { useAccount, useQuery } from "wagmi";
-import { IBalance } from "@src/types";
+import { IAccount, IBalance } from "@src/types";
 import Moralis from "moralis";
 import { EvmChain } from "moralis/common-evm-utils";
 import { getTokenPercentChangeIn24h, getTokenPriceInUSD, isEmpty } from "../lib/utils";
 import { formatUnits } from "ethers/lib/utils";
 import QRCode from "react-qr-code";
+import { createAccount } from "@src/lib/api";
+import { useQueryClient } from "react-query";
 
 export const HomeTemplate = (): ReactElement => {
     const { isConnected, address } = useAccount();
     const [stateAddress, setStateAddress] = useState<string>();
+    const [account, setAccount] = useState<IAccount>();
     const [listOfPrice, setListOfPrice] = useState();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     const [editName, setEditName] = useState<boolean>(false);
     const [openQRModal, setOpenQRModal] = useState<boolean>(false);
+    const textInputRef = useRef<HTMLInputElement>(null);
+    const accountQueryClient = useQueryClient();
+    accountQueryClient.fetchQuery(["account"]).then((account: IAccount) => {
+        if (!account) {
+            setAccount(account);
+        }
+    });
 
     const handleSnackbarClose = () => {
         setOpenSnackbar(false);
@@ -137,8 +147,21 @@ export const HomeTemplate = (): ReactElement => {
             .catch((err) => console.error(err));
     };
 
-    const handleEditName = () => {
-        console.log("editName: ", editName);
+    const handleEditName = async () => {
+        if (editName) {
+            const newAccount: IAccount = {
+                id: account.id,
+                address: account.address,
+                name: textInputRef.current.value,
+            };
+            await createAccount(newAccount)
+                .then((res) => {
+                    setAccount(newAccount);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
         setEditName(!editName);
     };
 
@@ -224,10 +247,11 @@ export const HomeTemplate = (): ReactElement => {
         return nativeBalance ? (
             <Container sx={{ p: 0, background: "#FFFFFF", padding: 2, borderRadius: 4 }}>
                 <Grid display={"flex"} sx={{ height: "34px", alignItems: "center" }}>
-                    {/* <Typography fontSize={18} fontWeight={700} sx={{ mr: 1 }}>
-                        {name}
-                    </Typography> */}
-                    <Input disableUnderline={!editName} defaultValue={name} />
+                    <Input
+                        inputRef={textInputRef}
+                        disableUnderline={!editName}
+                        defaultValue={name}
+                    />
                     {editName ? (
                         <Button
                             sx={{ width: 30, height: 22, fontSize: 10 }}
@@ -318,7 +342,6 @@ export const HomeTemplate = (): ReactElement => {
 
     useEffect(() => {
         if (isConnected) {
-            console.log(address);
             setStateAddress(address);
         }
     }, [isConnected]);
@@ -329,7 +352,7 @@ export const HomeTemplate = (): ReactElement => {
                 <Skeleton height={218} />
             ) : (
                 <MainDashboard
-                    name={"Bryan's Wallet"}
+                    name={account?.name}
                     nativeBalance={requestNativeTokensQuery.data as IBalance}
                 />
             )}

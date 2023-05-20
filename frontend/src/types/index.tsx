@@ -11,7 +11,7 @@ export interface IAccount {
     address: string;
     name?: string;
     img?: string;
-    createdAt: string;
+    createdAt?: string;
     updatedAt?: string;
 }
 
@@ -82,7 +82,7 @@ export interface IBalance {
     percentChange24h?: number;
 }
 
-export type IAccountCreateDto = Omit<IAccount, "id" | "createdAt" | "updatedAt">;
+export type IAccountCreateDto = Omit<IAccount, "createdAt" | "updatedAt">;
 
 export interface IChannelCreateDTO {
     channelName: string;
