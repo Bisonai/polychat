@@ -103,4 +103,46 @@ export class ApiService {
       deletedAt: message.deleted_at,
     };
   }
+
+  //******************************* select  ******************************/
+  async getAllList(): Promise<IChannel[]> {
+    const channels = await this.prisma.channels.findMany({
+      include: { members: true },
+    });
+    let data: IChannel[] = [];
+
+    await Promise.all(
+      await channels.map(async (channel) => {
+        const _members = channel.members;
+        let accountMember: IAccount[] = [];
+
+        await Promise.all(
+          await channel.members.map(async (member) => {
+            const account = await this.prisma.accounts.findFirst({
+              where: { id: member.account_id },
+            });
+            accountMember.push({
+              id: account.id,
+              address: account.address,
+              name: account.name,
+              img: account.img,
+              createdAt: account.created_at,
+              updatedAt: account.updated_at,
+            });
+          })
+        );
+
+        const cl: IChannel = {
+          id: channel.id,
+          channelName: channel.channel_name,
+          members: accountMember,
+          totalUnread: channel.total_unread,
+          lastMessage: channel.last_message,
+          lastMessageAt: channel.last_message_at,
+        };
+        data.push(cl);
+      })
+    );
+    return [...data].sort((a, b) => b.id - a.id);
+  }
 }

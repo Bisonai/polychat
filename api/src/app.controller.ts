@@ -14,10 +14,6 @@ export class AppController {
   health(): string {
     return this.appService.health();
   }
-  @Get("/test")
-  test() {
-    this.appService.sendNotification("asdf", "asdf");
-  }
 
   @Sse("/subscribe/list")
   async subscribeListEvent() {

@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Sse,
 } from "@nestjs/common";
@@ -53,6 +54,14 @@ export class ApiController {
     @Body() _messageCreateDto: IMessageCreateDto
   ): Promise<IMessage> {
     return await this.apiService.createMessage(_messageCreateDto);
+  }
+
+  @Get("/list")
+  @ApiOperation({ operationId: "getAllList" })
+  @ApiBadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async getAllList(): Promise<IChannel[]> {
+    return await this.apiService.getAllList();
   }
 }
 
