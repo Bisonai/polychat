@@ -10,14 +10,14 @@ import ERC20Abi from "@src/lib/abi/ERC20.json";
 import ERC721Abi from "@src/lib/abi/ERC721.json";
 import { ethers } from 'ethers'
 
-const chains = [polygonMumbai]
-const metaMaskConnector = new MetaMaskConnector({ chains })
+const chains = [polygonMumbai];
+const metaMaskConnector = new MetaMaskConnector({ chains });
 const coinbaseWalletConnector = new CoinbaseWalletConnector({
     chains,
     options: {
         appName: "cinder",
     },
-})
+});
 // const walletConnectConnector = new WalletConnectConnector({
 //     chains,
 //     options: {
@@ -53,3 +53,4 @@ export const sendToken = async (connector: Connector, nft: EvmNft, to: string) =
 
 
 }
+
