@@ -6,7 +6,7 @@
         "id": "@id",
         "type": "@type",
         "YoungBloodCredential": {
-          "@id": "https://raw.githubusercontent.com/Bisonai/polychat/main/json-ld/YoungBloodDAO.json-ld#YoungBloodCredential",
+          "@id": "https://raw.githubusercontent.com/Bisonai/polychat/main/schemas/json-ld/YoungBloodDAO.json-ld#YoungBloodCredential",
           "@context": {
             "@version": 1.1,
             "@protected": true,
