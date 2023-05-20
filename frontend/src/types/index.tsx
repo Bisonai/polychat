@@ -83,3 +83,12 @@ export enum IWalletName {
     Coinbase = "Coinbase",
     // WalletConnect = "WalletConnect",
 }
+
+export interface IBalance {
+    name: string;
+    tickerName: string;
+    symbol: string;
+    quantity: number;
+    valueInUSD: number;
+    formatted: string;
+}
