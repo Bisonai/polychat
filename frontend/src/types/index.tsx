@@ -1,7 +1,3 @@
-/**
- * @interface /api/channels
- * @returns {IChannel[]}
- */
 export interface IChannel {
     id: number;
     channelName: string;
@@ -10,42 +6,29 @@ export interface IChannel {
     lastMessage: string;
     lastMessageAt: string;
 }
-
-/**
- * @interface /api/account/:address
- * @returns {IAccount}
- */
 export interface IAccount {
     id: number;
     address: string;
-    name: string;
-    imgUrl: string;
-    /**
-     * 미정
-     */
-    polygonId: string;
+    name?: string;
+    img?: string;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: string;
 }
 
-/**
- * @interface /api/messages/:channelId
- * @returns {IMessage[]}
- */
 export interface IMessage {
-    id: number;
+    id: bigint;
     channelId: number;
-    sequence: number;
-    accountAddress: string;
-    contractAddress: string;
+    accountId: number;
+    accountAddress?: string;
+    contractAddress?: string;
     messageType: IMessageType;
-    txHash: string;
-    tokenValue: number;
-    nftTokenId: string;
-    nftTokenUri: string;
+    txHash?: string;
+    tokenValue?: number;
+    nftTokenId?: string;
+    nftTokenUri?: string;
     message: string;
-    createdAt: string;
-    deletedAt: string;
+    createdAt?: string;
+    deletedAt?: string;
 }
 
 /**
@@ -71,6 +54,11 @@ export enum IMessageType {
     token = "token",
 }
 
+export interface IMember {
+    channelId: number;
+    accountId: number;
+}
+
 /**
  * @interface /api/unreaded
  */
@@ -93,3 +81,12 @@ export interface IBalance {
     formatted: string;
     percentChange24h?: number;
 }
+
+export interface IAccountCreateDto extends Omit<IAccount, "id" | "createdAt" | "updatedAt"> {}
+
+export interface IChannelCreateDTO {
+    channelName: string;
+    members: [number];
+}
+
+export interface IMessageCreateDto extends Omit<IMessage, "id" | "createdAt" | "deletedAt"> {}

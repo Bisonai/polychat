@@ -12,12 +12,14 @@ import MailIcon from "@mui/icons-material/Mail";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { useDisconnect } from "wagmi";
+import { useRouter } from "next/router";
+import { routes } from "@src/lib/route";
 
 export default function TopNavigation() {
     const { disconnect } = useDisconnect();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
-
+    const router = useRouter();
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -131,12 +133,17 @@ export default function TopNavigation() {
                             aria-label="account of current user"
                             aria-controls={menuId}
                             aria-haspopup="true"
-                            onClick={handleProfile}
+                            onClick={() => router.push(routes.home)}
                             color="inherit"
                         >
                             <AccountCircle />
                         </IconButton>
-                        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                        <IconButton
+                            size="large"
+                            aria-label="show 4 new mails"
+                            color="inherit"
+                            onClick={() => router.push(routes.channel)}
+                        >
                             <Badge badgeContent={4} color="error">
                                 <MailIcon />
                             </Badge>

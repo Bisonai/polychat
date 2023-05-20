@@ -20,6 +20,8 @@ COPY prisma prisma
 
 RUN yarn install
 
+RUN npx prisma generate
+
 RUN yarn build
 
 CMD ["yarn start:prod"]

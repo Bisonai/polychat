@@ -6,11 +6,11 @@ import { IAccount, IAccountCreateDto } from "./dto/accountDto";
 import { IChannel, IChannelCreateDTO } from "./dto/channelDto";
 import { IMember, IMemberCreateDto } from "./dto/memberDto";
 import { isChain } from "mathjs";
-import { IMessage, IMessageCreateDto } from "./dto/messageDto";
+import { IMessage, IMessageCreateDto, IMessageType } from "./dto/messageDto";
 
 @Injectable()
 export class ApiService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createAccount(_accountCreateDto: IAccountCreateDto): Promise<IAccount> {
     const { address, name } = _accountCreateDto;
@@ -93,7 +93,7 @@ export class ApiService {
       accountId: message.account_id,
       accountAddress: message.account_address,
       contractAddress: message.contract_address,
-      messageType: message.message_type,
+      messageType: message.message_type as IMessageType,
       txHash: message.tx_hash,
       tokenValue: message.token_value,
       nftTokenId: message.nft_token_id,
@@ -162,7 +162,7 @@ export class ApiService {
           accountId: message.account_id,
           accountAddress: message.account_address,
           contractAddress: message.account_address,
-          messageType: message.message_type,
+          messageType: message.message_type as IMessageType,
           txHash: message.tx_hash,
           tokenValue: message.token_value,
           nftTokenId: message.nft_token_id,
