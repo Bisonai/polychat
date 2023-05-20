@@ -1,13 +1,15 @@
-name: Glitch Cinder Deploy to Amazon ECR
+name: Glitch Cinder API Deploy to Amazon ECR
 
 on:
   push:
     branches:
-      - main2
+      - main
+    paths:
+      - "api/**"
 
 env:
   ecr_url: public.ecr.aws/bisonai/glitch
-  role_arn: arn:aws:iam::831311642255:oidc-provider/token.actions.githubusercontent.com
+  role_arn: arn:aws:iam::831311642255:role/orakl_ecr_github_upload
 
 jobs:
   prepare:
@@ -49,14 +51,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Docker build cinder-glitch
-        run:  docker-compose -f docker-compose.build.yaml build
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
           role-to-assume: ${{ env.role_arn }}
+
+      - name: Docker build cinder-glitch
+        run:  docker-compose -f api/docker-compose.build.yaml build
+
+
 
       - name: Login to Amazon ECR
         id: login-ecr-public
@@ -64,7 +68,7 @@ jobs:
         with:
           registry-type: public        
 
-      - name: Publish Image to ECR(cinder)
+      - name: Publish Image to ECR(api)
         run: |
-          docker tag cinder ${{ env.ecr_url }}:v${{ needs.prepare.outputs.version }}.${{ needs.prepare.outputs.tag_date }}.${{ needs.prepare.outputs.tag_git_hash }}
-          docker push ${{ env.ecr_url }}:v${{ needs.prepare.outputs.version }}.${{ needs.prepare.outputs.tag_date }}.${{ needs.prepare.outputs.tag_git_hash }}
+          docker tag api ${{ env.ecr_url }}:v${{ needs.prepare.outputs.version }}.${{ needs.prepare.outputs.tag_date }}.${{ needs.prepare.outputs.tag_git_hash }}
+          docker push ${{ env.ecr_url }}:api.v${{ needs.prepare.outputs.version }}.${{ needs.prepare.outputs.tag_date }}.${{ needs.prepare.outputs.tag_git_hash }}

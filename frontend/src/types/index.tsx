@@ -73,12 +73,13 @@ export enum IWalletName {
 }
 
 export interface IBalance {
-    name: string;
+    chainName: string;
     tickerName: string;
     symbol: string;
     quantity: number;
-    valueInUSD: number;
+    valueInUSD: string;
     formatted: string;
+    percentChange24h?: number;
 }
 
 export interface IAccountCreateDto extends Omit<IAccount, "id" | "createdAt" | "updatedAt"> {}

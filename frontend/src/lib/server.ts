@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function fetchLatestCryptoPriceInfo() {
     try {
-        const res = await axios.get(
+        const request = await axios.get(
             "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
             {
                 params: {
@@ -16,9 +16,7 @@ export async function fetchLatestCryptoPriceInfo() {
                 },
             },
         );
-        res.data.slice(0, 50);
-        console.log(res.data);
-        return res.data;
+        return request.data;
     } catch (error) {
         console.log(error);
     }

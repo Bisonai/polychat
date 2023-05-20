@@ -1,62 +1,81 @@
-import { Box, Button, Container, Grid, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Skeleton, Typography } from "@mui/material";
 import { ReactElement, useEffect, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import MonetizationOn from "@mui/icons-material/MonetizationOn";
-import { fetchBalance } from "@wagmi/core";
-import { useAccount } from "wagmi";
+import { useAccount, useQuery } from "wagmi";
 import { IBalance } from "@src/types";
+import Moralis from "moralis";
+import { EvmChain } from "moralis/common-evm-utils";
+import { getTokenPercentChangeIn24h, getTokenPriceInUSD, isEmpty } from "../lib/utils";
+import { formatUnits } from "ethers/lib/utils";
 
 export const HomeTemplate = (): ReactElement => {
     const { isConnected, connector, address } = useAccount();
     const [stateAddress, setStateAddress] = useState<string>();
-    const [balance, setBalance] = useState<number>();
-    const [symbol, setSymbol] = useState<string>();
-    const [latestCryptoInfo, setLatestCryptoInfo] = useState<any>();
+    const [listOfPrice, setListOfPrice] = useState();
 
-    const balances: IBalance[] = [
-        {
-            name: "MATIC",
-            tickerName: "MAC",
-            symbol: "",
-            quantity: 10.1,
-            valueInUSD: 1000,
-            formatted: "",
+    const requestNativeTokensQuery = useQuery(["NativeTokens", address], {
+        queryFn: async () => {
+            if (address) {
+                const nativeBal = await Moralis.EvmApi.balance.getNativeBalance({
+                    chain: EvmChain.MUMBAI,
+                    address,
+                });
+
+                const quantity = parseFloat(nativeBal.result.balance.ether);
+
+                const nativeBalance: IBalance = {
+                    chainName: EvmChain.MUMBAI.name,
+                    tickerName: EvmChain.MUMBAI.currency.symbol,
+                    symbol: EvmChain.MUMBAI.currency.symbol,
+                    quantity: quantity,
+                    valueInUSD: getTokenPriceInUSD(
+                        listOfPrice,
+                        quantity,
+                        EvmChain.MUMBAI.currency.symbol,
+                    ).toFixed(4),
+                    percentChange24h: getTokenPercentChangeIn24h(
+                        listOfPrice,
+                        EvmChain.MUMBAI.currency.symbol,
+                    ),
+                    formatted: "",
+                };
+
+                return nativeBalance || {};
+            }
         },
-        {
-            name: "MATIC",
-            tickerName: "MAC",
-            symbol: "",
-            quantity: 10.1,
-            valueInUSD: 1000,
-            formatted: "",
+    });
+
+    const requestERC20TokensQuery = useQuery(["ERC20Tokens", address], {
+        queryFn: async () => {
+            if (address) {
+                const ERC20Tokens = await Moralis.EvmApi.token.getWalletTokenBalances({
+                    chain: EvmChain.MUMBAI,
+                    address,
+                });
+
+                const ERC20Balances = ERC20Tokens.result.map((erc20) => {
+                    const quantity = parseFloat(formatUnits(erc20.amount.toBigInt()));
+                    return {
+                        chainName: erc20.token.chain.name,
+                        tickerName: erc20.token.symbol,
+                        symbol: erc20.token.symbol,
+                        quantity: quantity,
+                        valueInUSD: getTokenPriceInUSD(
+                            listOfPrice,
+                            quantity,
+                            erc20.token.symbol,
+                        ).toFixed(4),
+                        formatted: "",
+                    };
+                });
+
+                return ERC20Balances || [];
+            }
         },
-        {
-            name: "MATIC",
-            tickerName: "MAC",
-            symbol: "",
-            quantity: 10.1,
-            valueInUSD: 1000,
-            formatted: "",
-        },
-        {
-            name: "MATIC",
-            tickerName: "MAC",
-            symbol: "",
-            quantity: 10.1,
-            valueInUSD: 1000,
-            formatted: "",
-        },
-        {
-            name: "MATIC",
-            tickerName: "MAC",
-            symbol: "",
-            quantity: 10.1,
-            valueInUSD: 1000,
-            formatted: "",
-        },
-    ];
+    });
 
     const ContainedButton = ({ title }): ReactElement => {
         return (
@@ -66,13 +85,16 @@ export const HomeTemplate = (): ReactElement => {
         );
     };
 
-    const PriceChangePercentage = ({ curOwnPrice, curPrice }): ReactElement => {
-        const changeInPercentage = (((curPrice - curOwnPrice) / curPrice) * 100).toFixed(2);
+    const PriceChangePercentage = ({ curPrice, changeRate }): ReactElement => {
+        if (isEmpty(curPrice) || isEmpty(changeRate)) {
+            return;
+        }
+        const changeInPrice = curPrice * changeRate;
         return (
             <Grid container>
                 <ArrowDropUpIcon color="primary" />
-                <Typography fontSize={12}>{changeInPercentage}%</Typography>
-                <Typography fontSize={12}>(+$168.03)</Typography>
+                <Typography fontSize={12}>{changeRate * 100}%</Typography>
+                <Typography fontSize={12}>{changeInPrice}</Typography>
             </Grid>
         );
     };
@@ -101,7 +123,27 @@ export const HomeTemplate = (): ReactElement => {
         );
     };
 
+    const getTotalTokenBalanceInUSD = (): number | undefined => {
+        if (requestNativeTokensQuery.isFetching || requestERC20TokensQuery.isFetching) {
+            return 0;
+        }
+        const nativeBal = requestNativeTokensQuery.data as IBalance;
+        if (isEmpty(nativeBal)) {
+            return 0;
+        }
+
+        let balance = parseFloat(nativeBal.valueInUSD);
+
+        (requestERC20TokensQuery.data as IBalance[]).forEach(
+            (a) => (balance += parseFloat(a.valueInUSD)),
+        );
+        return balance;
+    };
+
     const TokenListItem = ({ balance }: { balance: IBalance }): ReactElement => {
+        if (isEmpty(balance)) {
+            return <Skeleton />;
+        }
         return (
             <Grid
                 display={"flex"}
@@ -121,20 +163,23 @@ export const HomeTemplate = (): ReactElement => {
                     <Grid>
                         <Grid>
                             <Typography color="#848590" fontSize={12}>
-                                {balance.name}
+                                {balance.chainName}
                             </Typography>
                             <Typography fontSize={16}>{balance.tickerName}</Typography>
-                            <PriceChangePercentage curOwnPrice={100} curPrice={200} />
+                            <PriceChangePercentage
+                                curPrice={balance.valueInUSD}
+                                changeRate={balance.percentChange24h}
+                            />
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid display={"flex"} alignItems={"center"}>
                     <Grid>
                         <Typography fontSize={18} fontWeight={600}>
-                            200.5
+                            {balance.quantity}
                         </Typography>
                         <Typography fontSize={12} color="#848590">
-                            $345.3
+                            ${balance.valueInUSD}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -142,8 +187,14 @@ export const HomeTemplate = (): ReactElement => {
         );
     };
 
-    const MainDashboard = ({ name }): ReactElement => {
-        return (
+    const MainDashboard = ({
+        name,
+        nativeBalance,
+    }: {
+        name: string;
+        nativeBalance: IBalance;
+    }): ReactElement => {
+        return nativeBalance ? (
             <Container sx={{ p: 0, background: "#FFFFFF", padding: 2, borderRadius: 4 }}>
                 <Typography fontSize={18} fontWeight={700}>
                     {name}
@@ -164,53 +215,69 @@ export const HomeTemplate = (): ReactElement => {
                 </Grid>
                 <Grid sx={{ mb: 2 }}>
                     <Typography fontSize={32} fontWeight={600}>
-                        $3000.55
+                        $ {getTotalTokenBalanceInUSD()}
                     </Typography>
-                    <PriceChangePercentage curOwnPrice={100} curPrice={200} />
+                    <PriceChangePercentage
+                        curPrice={nativeBalance.valueInUSD}
+                        changeRate={nativeBalance.percentChange24h}
+                    />
                 </Grid>
                 <Grid container direction="row" justifyContent={"space-evenly"}>
                     <ContainedButton title="Receive" />
                     <ContainedButton title="Withdraw" />
                 </Grid>
             </Container>
+        ) : (
+            <Skeleton />
         );
     };
 
     useEffect(() => {
-        // TODO: fetch coinmarketcap market data
-        console.log("initialized homepage");
         const fetchData = async () => {
-            const data = await fetch("/api/coinmarketcap");
-            const json = await data.json();
-
-            console.log(`data: ${json}`);
+            const data = await fetch("/api/coinmarketcap").then((res) => res.json());
+            setListOfPrice(data);
         };
 
         fetchData().catch(() => console.error);
     }, []);
 
     useEffect(() => {
+        requestNativeTokensQuery.refetch();
+        requestERC20TokensQuery.refetch();
+    }, listOfPrice);
+
+    useEffect(() => {
         if (isConnected) {
             console.log(address);
             setStateAddress(address);
-            // .then or await
-            fetchBalance({ address, chainId: 80001 }).then((res) => {
-                console.log(res);
-                const numBalance = parseInt(res.value.toString());
-                setBalance(numBalance);
-                setSymbol(res.symbol);
-            });
         }
     }, [isConnected]);
 
     return (
         <Grid sx={{ p: 2, background: "#E2E2E8" }}>
-            <MainDashboard name={"Bryan's Wallet"} />
+            {requestNativeTokensQuery.isFetching ? (
+                <Skeleton />
+            ) : (
+                <MainDashboard
+                    name={"Bryan's Wallet"}
+                    nativeBalance={requestNativeTokensQuery.data as IBalance}
+                />
+            )}
             <Box height={30} />
             <TokenListTitle />
-            {balances.map((balance: IBalance, index) => (
-                <TokenListItem key={index} balance={balance} />
-            ))}
+            {requestNativeTokensQuery.isFetching && !requestNativeTokensQuery.data ? (
+                <Skeleton height={98} />
+            ) : (
+                <TokenListItem key={0} balance={requestNativeTokensQuery.data as IBalance} />
+            )}
+
+            {requestERC20TokensQuery.isFetching && isEmpty(requestERC20TokensQuery.data) ? (
+                <Skeleton height={98} />
+            ) : (
+                requestERC20TokensQuery?.data?.map((erc20Token, key) => (
+                    <TokenListItem key={key} balance={erc20Token} />
+                ))
+            )}
         </Grid>
     );
 };

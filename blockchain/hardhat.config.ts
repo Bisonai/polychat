@@ -2,31 +2,19 @@ import { HardhatUserConfig, task } from 'hardhat/config'
 import '@nomicfoundation/hardhat-toolbox'
 import '@nomiclabs/hardhat-web3'
 import '@nomiclabs/hardhat-ethers'
-import { BigNumber } from 'ethers'
 import dotenv from 'dotenv'
-import { parseEther } from 'ethers/lib/utils'
-// import { ethers } from 'hardhat'
 dotenv.config()
 
-// let transferAddresses = ['0xc34b48Bed1e9DdaB6DD98264D17D7FC7EF595077']
 let transferAddresses = ['0x5aEcC9617cC5A4De21BaFFFEa16153eeB7A2ac14']
-
-const commonConfig = {
-  gas: 0x6691b7,
-  accounts: {
-    mnemonic: process.env.MNEMONIC || ''
-  }
-}
 
 const config: HardhatUserConfig = {
   solidity: '0.8.16',
-  defaultNetwork: 'goerli',
+  defaultNetwork: 'localhost',
   networks: {
     localhost: {
       gas: 1_400_000
     },
     goerli: {
-      //url: `https://eth-goerli.alchemyapi.io/v2/${process.env.GOERLI_API_KEY}`,
       url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [process.env.PRIVATE_KEY || '']
     },
@@ -36,21 +24,19 @@ const config: HardhatUserConfig = {
     },
     mumbai: {
       url: `https://rpc-mumbai.maticvigil.com`,
-      accounts: [process.env.PRIVATE_KEY || '']
+      accounts: [process.env.PRIVATE_KEY || ''],
+      saveDeployments: true
     }
+  },
+  etherscan: {
+    apiKey: process.env.POLYGONSCAN_API__KEY
   }
 }
 
 task('address').setAction(async (args, hre) => {
-  console.log('Private Key:', process.env.PRIVATE_KEY)
-  console.log('Address of mnemonics:', process.env.MNEMONIC)
   const mnemonic = process.env.MNEMONIC || ''
-  const something = hre.ethers.Wallet.fromMnemonic(mnemonic)
-  console.log('Mnemonic Account:, ', something.address)
-  console.log('Mnemonic Account SK:, ', something.privateKey)
-
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY || '')
-  console.log('Wallet from Private Key:', wallet.address)
+  const account = hre.ethers.Wallet.fromMnemonic(mnemonic)
+  console.log('Mnemonic Account:, ', account.address)
 })
 
 task('transfer', 'Mint BYRM TOKEN').setAction(async (args, hre) => {
@@ -86,11 +72,7 @@ task('nftTest', 'Mint Chat NFT').setAction(async (args, hre) => {
   const [owner] = await hre.ethers.getSigners()
   console.log('Owner Address', owner.address)
 
-  // const balance = await nft.balanceOf(owner.address)
-  // const nft1 = await nft.tokenOfOwnerByIndex(owner.address, 0)
   const totalSupply = await nft.totalSupply()
-  // console.log(balance)å
-  // console.log(nft1)
   console.log('TotalSupply:', totalSupply)
 })
 
