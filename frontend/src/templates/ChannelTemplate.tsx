@@ -2,8 +2,9 @@ import MessageInput from "@components/Channel/MessageInput";
 import { MessageList } from "@components/Channel/MessageList";
 import { Grid } from "@mui/material";
 import { getMessages } from "@src/lib/api";
+import { BE_URL } from "@src/lib/constants";
 import { shortenAddress } from "@src/lib/utils";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { useQuery } from "react-query";
 
 export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElement => {
@@ -16,6 +17,25 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
         name: shortenAddress(m.accountAddress),
         address: m.accountAddress,
     }));
+
+    useEffect(() => {
+        if (channelId) {
+            const eventSource = new EventSource(`${BE_URL}/subscribe/channel/${channelId}`, {
+                withCredentials: false,
+            });
+            eventSource.onmessage = (event) => {
+                console.log("onmessage", event);
+                messageQuery.refetch();
+            };
+            console.log(eventSource);
+            eventSource.onerror = (event) => {
+                console.log("error", event);
+            };
+            eventSource.addEventListener("channel-2", (event) => {
+                console.log("channel-2", event);
+            });
+        }
+    }, [channelId]);
 
     return (
         <Grid>

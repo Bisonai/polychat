@@ -27,7 +27,7 @@ export const MessageList = ({ messages }: { messages: IMessage[] }) => {
             return curr;
         }, null);
     const { address } = useAccount();
-    console.log(messageList);
+
     return (
         <div>
             {!messageList.length ? (

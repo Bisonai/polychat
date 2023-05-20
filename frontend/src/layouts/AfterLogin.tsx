@@ -1,6 +1,8 @@
 import TopNavigation from "@components/TopNavigation";
 import BottomNavigation from "@components/BottomNavigation";
 import { Grid } from "@mui/material";
+import { useEffect } from "react";
+import { BE_URL } from "@src/lib/constants";
 
 export const AfterLogin = ({ children }) => {
     return (

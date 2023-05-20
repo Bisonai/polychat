@@ -41,7 +41,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { IAccount } from "@src/types";
+import { IAccount, IMessageType } from "@src/types";
 import { Connector, useAccount, useBalance, useQuery } from "wagmi";
 import Moralis from "moralis";
 import { Erc20Token, Erc20Value, EvmChain, EvmNft } from "moralis/common-evm-utils";
@@ -51,6 +51,7 @@ import { usePublicClient, useWalletClient } from "wagmi";
 import Image from "next/image";
 import axios from "axios";
 import { ethers } from "ethers";
+import { createMessage } from "@src/lib/api";
 
 export default function MessageInput({
     members,
@@ -61,13 +62,32 @@ export default function MessageInput({
 }) {
     const [open, setOpen] = React.useState(false);
     const [sendType, setSendType] = React.useState("");
-    const handleSendMessage = (event: any) => {
-        // Check If it is shift + enter
-        if (event.shiftKey && event.key === "Enter") {
+    const { address, connector } = useAccount();
+    const [text, setText] = React.useState("");
+    const [loading, setLoading] = React.useState(false);
+    const handleSendMessage = async () => {
+        if (text.toString().trim() === "") {
             return;
         }
-        // TODO:Send Message
-        console.log(event.target.value);
+        // Check If it is shift + enter
+        setLoading(true);
+        await createMessage({
+            channelId: Number(channelId),
+            message: text,
+            accountId: 5,
+            accountAddress: address,
+            contractAddress: undefined,
+            messageType: IMessageType.text,
+            txHash: undefined,
+            tokenValue: undefined,
+        })
+            .then((res) => {
+                setText("");
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        setLoading(false);
     };
 
     const handleOpenModal = () => {
@@ -159,17 +179,30 @@ export default function MessageInput({
                     <IconAdd />
                 </IconButton>
                 <InputBase
-                    id="outlined-multiline-flexible"
+                    value={text}
                     multiline
                     maxRows={2}
                     fullWidth
+                    onChange={(e) => {
+                        setText(e.target.value);
+                    }}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            handleSendMessage(e);
+                            if (!e.shiftKey) {
+                                handleSendMessage();
+                                e.stopPropagation();
+                                return false;
+                            }
                         }
                     }}
                 />
-                <IconButton color="primary" sx={{ p: "10px" }} aria-label="directions">
+                <IconButton
+                    color="primary"
+                    sx={{ p: "10px" }}
+                    aria-label="directions"
+                    disabled={loading}
+                    onClick={handleSendMessage}
+                >
                     <IconSend />
                 </IconButton>
             </Paper>
@@ -206,7 +239,6 @@ export const SendStepper = ({
                 chain: EvmChain.MUMBAI,
                 address,
             });
-            console.log(request.result);
             return request.result || [];
         },
     });
@@ -217,7 +249,6 @@ export const SendStepper = ({
                 chain: EvmChain.MUMBAI,
                 address,
             });
-            console.log(request.result);
             return request.result || [];
         },
     });
