@@ -86,7 +86,7 @@ export type IAccountCreateDto = Omit<IAccount, "createdAt" | "updatedAt">;
 
 export interface IChannelCreateDTO {
     channelName: string;
-    members: [number];
+    members: number[];
 }
 
 export type IMessageCreateDto = Omit<IMessage, "id" | "createdAt" | "deletedAt">;
