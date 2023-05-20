@@ -75,6 +75,9 @@ export default function ChannelList() {
             {channelList.map((chatList, key) => (
                 <>
                     <ListItem
+                        style={{
+                            cursor: "pointer",
+                        }}
                         alignItems="flex-start"
                         key={key}
                         onClick={() => handleChannelClick(chatList.id)}
