@@ -52,6 +52,7 @@ import Image from "next/image";
 import axios from "axios";
 import { ethers } from "ethers";
 import { createMessage } from "@src/lib/api";
+import MonetizationOn from "@mui/icons-material/MonetizationOn";
 
 export default function MessageInput({
     members,
@@ -306,7 +307,7 @@ export const SendStepper = ({
                             message: "",
                             accountId,
                             accountAddress: address,
-                            contractAddress: selectedToken.contractAddress.toJSON(),
+                            contractAddress: selectedToken.contractAddress.toString(),
                             messageType: IMessageType.token,
                             txHash: receipt.transactionHash,
                             tokenValue: amount,
@@ -448,7 +449,7 @@ export const UserList = ({
     onSelect: (value: string) => void;
 }) => {
     return (
-        <>
+        <Box overflow={"scroll"} maxHeight={"300px"}>
             {members.map((member, key) => (
                 <ListItem key={key} onClick={() => onSelect(member.address)} disablePadding>
                     <ListItemButton>
@@ -466,38 +467,7 @@ export const UserList = ({
                     </ListItemButton>
                 </ListItem>
             ))}
-        </>
-    );
-};
-
-export const RatioList = ({
-    title,
-    onSelect,
-    options,
-}: {
-    title: string;
-    onSelect: (value: string) => void;
-    options: { [value: string]: string };
-}) => {
-    return (
-        <FormControl>
-            <FormLabel id="demo-row-radio-buttons-group-label">{title}</FormLabel>
-            <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-            >
-                {Object.entries(options).map(([key, value]) => (
-                    <FormControlLabel
-                        key={key}
-                        value={key}
-                        control={<Radio />}
-                        label={value}
-                        onClick={() => onSelect(key)}
-                    />
-                ))}
-            </RadioGroup>
-        </FormControl>
+        </Box>
     );
 };
 
@@ -578,7 +548,7 @@ export const TokenList = ({
             return;
         } else if (amount < 0) {
             return;
-        } else if (amount > Number(selectedToken.amount)) {
+        } else if (amount > parseFloat(selectedToken.value)) {
             return;
         }
         onSelect(selectedToken.token, amount);
@@ -587,10 +557,18 @@ export const TokenList = ({
         !selectedToken ||
         !amount ||
         amount <= BigInt(0) ||
-        amount > Number(formatUnits(selectedToken.amount.toBigInt()));
+        amount > parseFloat(selectedToken.value);
 
     return (
-        <List dense sx={{ width: "100%", bgcolor: "background.paper" }}>
+        <List
+            dense
+            sx={{
+                width: "100%",
+                bgcolor: "background.paper",
+                overflow: "scroll",
+                maxHeight: "300px",
+            }}
+        >
             {selectedToken ? (
                 <Grid display={"flex"} flexDirection={"column"} gap={"8px"}>
                     <Input
@@ -603,7 +581,7 @@ export const TokenList = ({
                         placeholder="Amount"
                         inputProps={{
                             "aria-label": selectedToken.token.symbol,
-                            max: formatUnits(selectedToken.amount.toBigInt()),
+                            max: parseFloat(selectedToken.value),
                             min: 0,
                         }}
                         onChange={(e) => {
@@ -645,7 +623,7 @@ export const TokenList = ({
                         >
                             <ListItemButton>
                                 <ListItemAvatar>
-                                    <Avatar alt={"MATIC"} src={balanceQuery?.data?.symbol} />
+                                    <Avatar alt={"MATIC"} src={"/images/matic.webp"} />
                                 </ListItemAvatar>
                                 <ListItemText
                                     primary={
@@ -681,27 +659,27 @@ export const TokenList = ({
                                 >
                                     <ListItemButton>
                                         <ListItemAvatar>
-                                            <Avatar alt={token.name} src={token.thumbnail} />
+                                            {token.thumbnail ? (
+                                                <Avatar alt={token.name} src={token.thumbnail} />
+                                            ) : (
+                                                <MonetizationOn sx={{ width: 32, height: 32 }} />
+                                            )}
                                         </ListItemAvatar>
                                         <ListItemText
                                             primary={
                                                 <>
                                                     <Typography>{token.name}</Typography>
                                                     <Typography>
-                                                        {!erc20Value?.amount
-                                                            ? "0"
-                                                            : parseFloat(
-                                                                  formatUnits(
-                                                                      erc20Value.amount.toBigInt(),
-                                                                  ),
-                                                              ).toFixed(3)}{" "}
+                                                        {parseFloat(erc20Value.value).toFixed(3)}
                                                         {token.symbol}
                                                     </Typography>
                                                 </>
                                             }
                                             secondary={
                                                 <Typography variant="body2" color="text.secondary">
-                                                    {shortenAddress(token.contractAddress.toJSON())}
+                                                    {shortenAddress(
+                                                        token.contractAddress.toString(),
+                                                    )}
                                                 </Typography>
                                             }
                                         />
