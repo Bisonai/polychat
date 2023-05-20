@@ -3,12 +3,12 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 // import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { polygonMumbai } from "@wagmi/core/chains";
-import Moralis from 'moralis'
+import Moralis from "moralis";
 import { EvmNft } from "moralis/common-evm-utils";
 import { Connector } from "wagmi";
 import ERC20Abi from "@src/lib/abi/ERC20.json";
 import ERC721Abi from "@src/lib/abi/ERC721.json";
-import { ethers } from 'ethers'
+import { ethers } from "ethers";
 
 const chains = [polygonMumbai];
 const metaMaskConnector = new MetaMaskConnector({ chains });
@@ -29,28 +29,54 @@ export const connecters: Record<IWalletName, any> = {
     [IWalletName.Metamask]: metaMaskConnector,
     [IWalletName.Coinbase]: coinbaseWalletConnector,
     // [IWalletName.WalletConnect]: walletConnectConnector,
-}
+};
 
 export const shortenAddress = (address: string, chars = 5) => {
     return `${address.substring(0, chars + 2)}...${address.substring(
         address.length - chars,
-        address.length
-    )}`
-}
-
+        address.length,
+    )}`;
+};
 
 export const sendNFT = async (connector: Connector, nft: EvmNft, to: string) => {
     // SEND ERC721 NFT
-    const provider = await connector.getProvider({ chainId: 80001 })
-    const contract = new ethers.Contract(nft.tokenAddress.toJSON(), ERC721Abi.abi, provider)
-    const nftContract = contract.connect(provider.getSigner())
-    return nftContract.safeTransferFrom(provider.getSigner().getAddress(), to, nft.tokenId)
-}
-
+    const provider = await connector.getProvider({ chainId: 80001 });
+    const contract = new ethers.Contract(nft.tokenAddress.toJSON(), ERC721Abi.abi, provider);
+    const nftContract = contract.connect(provider.getSigner());
+    return nftContract.safeTransferFrom(provider.getSigner().getAddress(), to, nft.tokenId);
+};
 
 export const sendToken = async (connector: Connector, nft: EvmNft, to: string) => {
     // SEND ERC721 NFT
+};
 
-
+export function isEmpty(obj: Record<string, any>): boolean {
+    if (obj == undefined || obj == null) {
+        return true;
+    }
+    return Object.keys(obj).length === 0;
 }
 
+export function getTokenPriceInUSD(listOfPrice, tokenQuantity, tokenSymbol): number {
+    if (isEmpty(listOfPrice)) return 0;
+
+    try {
+        const tokenInfo = listOfPrice.find((info) => info.symbol == tokenSymbol);
+        return tokenInfo.quote.USD.price * tokenQuantity;
+    } catch (err) {
+        console.error(err);
+        return 0;
+    }
+}
+
+export function getTokenPercentChangeIn24h(listOfPrice, tokenSymbol): number {
+    if (isEmpty(listOfPrice)) return 0;
+
+    try {
+        const tokenInfo = listOfPrice.find((info) => info.symbol == tokenSymbol);
+        return tokenInfo.quote.USD.percent_change_24h;
+    } catch (err) {
+        console.error(err);
+        return 0;
+    }
+}
