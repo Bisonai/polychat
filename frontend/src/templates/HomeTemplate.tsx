@@ -128,6 +128,10 @@ export const HomeTemplate = (): ReactElement => {
             return;
         }
         const nativeBal = requestNativeTokensQuery.data as IBalance;
+        if (isEmpty(nativeBal)) {
+            return;
+        }
+
         let balance = parseFloat(nativeBal.valueInUSD);
 
         (requestERC20TokensQuery.data as IBalance[]).forEach(
@@ -268,7 +272,7 @@ export const HomeTemplate = (): ReactElement => {
             {requestERC20TokensQuery.isFetching && isEmpty(requestERC20TokensQuery.data) ? (
                 <Skeleton height={98} />
             ) : (
-                requestERC20TokensQuery.data.map((erc20Token, key) => (
+                requestERC20TokensQuery?.data?.map((erc20Token, key) => (
                     <TokenListItem key={key} balance={erc20Token} />
                 ))
             )}
