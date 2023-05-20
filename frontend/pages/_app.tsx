@@ -10,13 +10,24 @@ import wrapper, { configureStore } from "@redux/store/configureStore";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { polygonMumbai } from "@wagmi/core/chains";
 import { publicProvider } from "wagmi/providers/public";
-import { alchemyProvider } from "@wagmi/core/providers/alchemy";
+import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 import { CheckLogin } from "@src/layouts/CheckLogin";
 import { connecters } from "@src/lib/utils";
+import Moralis from "moralis";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
     [polygonMumbai],
-    [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY })],
+    [
+        jsonRpcProvider({
+            rpc(chain) {
+                return {
+                    http: "https://rpc-mumbai.matic.today",
+                    webSocket: "https://rpc-mumbai.matic.today",
+                };
+            },
+        }),
+        publicProvider(),
+    ],
 );
 // Set up wagmi config
 const config = createConfig({
@@ -24,6 +35,13 @@ const config = createConfig({
     connectors: Object.values(connecters),
     publicClient,
 });
+
+if (!Moralis.Core.isStarted) {
+    const settings = {
+        apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+    };
+    Moralis.start(settings);
+}
 
 function MyApp(props: AppProps) {
     const { Component, pageProps } = props;

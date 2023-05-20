@@ -15,7 +15,6 @@ export const LandingTemplate = () => {
     };
     const handleSelectWallet = (walletName: string) => {
         const connector = connecters.Metamask;
-        console.log(connector);
         connect({
             chainId: 80001,
             connector,

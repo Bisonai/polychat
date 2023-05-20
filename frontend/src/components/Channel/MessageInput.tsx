@@ -6,11 +6,9 @@ import IconAdd from "@mui/icons-material/Add";
 import { InputBase } from "@mui/material";
 
 export default function MessageInput({ channelId }: { channelId: string }) {
-    console.log(channelId);
     const handleSendMessage = (event: any) => {
         // Check If it is shift + enter
         if (event.shiftKey && event.key === "Enter") {
-            console.log("Shift + Enter");
             return;
         }
         // TODO:Send Message
