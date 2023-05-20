@@ -10,7 +10,7 @@ import { IMessage, IMessageCreateDto, IMessageType } from "./dto/messageDto";
 
 @Injectable()
 export class ApiService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createAccount(_accountCreateDto: IAccountCreateDto): Promise<IAccount> {
     const { address, name } = _accountCreateDto;

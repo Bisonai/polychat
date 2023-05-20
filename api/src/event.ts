@@ -18,7 +18,7 @@ export class EventsService {
 
   subscribeChannel(channelName: string, _id: number) {
     console.log(`${channelName}-${_id}`);
-    return fromEvent(this.emitter, "channel-50");
+    return fromEvent(this.emitter, `${channelName}-${_id}`);
   }
 
   emit(channelName, id) {
