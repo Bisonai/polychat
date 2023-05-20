@@ -27,7 +27,6 @@ export default function LabelBottomNavigation() {
         const route = getRouteFromUrl();
         setValue(route);
     }, []);
-    console.log(value);
     return (
         <BottomNavigation
             value={value === Route.landing ? Route.home : value}

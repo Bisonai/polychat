@@ -45,7 +45,13 @@ if (!Moralis.Core.isStarted) {
     };
     Moralis.start(settings);
 }
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+        },
+    },
+});
 function MyApp(props: AppProps) {
     const { Component, pageProps } = props;
     const store = configureStore();

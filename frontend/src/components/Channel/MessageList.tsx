@@ -43,13 +43,12 @@ export const MessageList = ({ messages }: { messages: IMessage[] }) => {
     const { address } = useAccount();
 
     return (
-        <div>
+        <Box position={"relative"} padding={4} paddingBottom={"80px"} id="message-list">
             {!messageList.length ? (
                 "No messages yet."
             ) : (
                 <>
                     {messageList.map((msgs, key) => {
-                        console.log(msgs);
                         const side = msgs[0].accountAddress === address ? "right" : "left";
                         const name = msgs[0].account.name;
                         const shortAddress = shortenAddress(
@@ -137,7 +136,7 @@ export const MessageList = ({ messages }: { messages: IMessage[] }) => {
                     })}
                 </>
             )}
-        </div>
+        </Box>
     );
 };
 

@@ -1,6 +1,6 @@
 import MessageInput from "@components/Channel/MessageInput";
 import { MessageList } from "@components/Channel/MessageList";
-import { Grid } from "@mui/material";
+import { Box, Divider, Grid } from "@mui/material";
 import { getMessages } from "@src/lib/api";
 import { BE_URL } from "@src/lib/constants";
 import { shortenAddress } from "@src/lib/utils";
@@ -36,13 +36,24 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
                 withCredentials: false,
             });
             window.messageEvent = eventSource;
-            eventSource.onmessage = (event) => {
-                console.log("onmessage", event);
-                messageQuery.refetch({
+            eventSource.onmessage = async (event) => {
+                console.log("onmessage", event.data);
+                const data = JSON.parse(event.data);
+                await messageQuery.refetch({
                     queryKey: ["messages", channelId],
                 });
+                console.log("data", data, data?.channelId, channelId);
+                if (data?.channelId == channelId) {
+                    console.log("channelId", event.data.channelId);
+                    // Scroll to the bottom
+                    const element = document.getElementById("message-list");
+                    console.log(element, element.scrollHeight);
+                    window?.scrollTo({
+                        top: element?.scrollHeight + 180,
+                        behavior: "smooth",
+                    });
+                }
             };
-            console.log(eventSource);
             eventSource.onerror = (event) => {
                 console.log("error", event);
             };
@@ -56,9 +67,12 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
 
     return (
         <Grid>
-            <Grid padding={4}>
-                <MessageList messages={messages} />
-            </Grid>
+            <MessageList messages={messages} />
+            <Divider
+                sx={{
+                    marginTop: "64px",
+                }}
+            />
             <Grid
                 sx={{
                     position: "fixed",

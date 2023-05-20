@@ -185,6 +185,10 @@ export default function MessageInput({
                     value={text}
                     multiline
                     maxRows={2}
+                    placeholder="Send a message"
+                    sx={{
+                        fontSize: "18px",
+                    }}
                     fullWidth
                     onChange={(e) => {
                         setText(e.target.value);
