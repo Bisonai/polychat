@@ -11,14 +11,14 @@ import { erc721ABI } from 'wagmi'
 import { ethers } from 'ethers'
 import { TransactionReceipt } from "viem";
 
-const chains = [polygonMumbai]
-const metaMaskConnector = new MetaMaskConnector({ chains })
+const chains = [polygonMumbai];
+const metaMaskConnector = new MetaMaskConnector({ chains });
 const coinbaseWalletConnector = new CoinbaseWalletConnector({
     chains,
     options: {
         appName: "cinder",
     },
-})
+});
 // const walletConnectConnector = new WalletConnectConnector({
 //     chains,
 //     options: {
@@ -50,6 +50,7 @@ export const sendNFT = async (connector: Connector, nft: EvmNft, to: string): Pr
 }
 
 
+
 export const sendToken = async (connector: Connector, token: Erc20Token, amount: number, to: string): Promise<TransactionReceipt> => {
     const provider = new ethers.providers.Web3Provider(await connector.getProvider({ chainId: 80001 }))
     const signer = await provider.getSigner()
@@ -58,3 +59,4 @@ export const sendToken = async (connector: Connector, token: Erc20Token, amount:
     const request = await tokenContract.transfer(to, amount)
     return request.wait()
 }
+
