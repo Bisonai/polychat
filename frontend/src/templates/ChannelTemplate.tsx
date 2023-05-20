@@ -73,7 +73,10 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
 
     return (
         <Grid>
-            <MessageList messages={messages} isFetching={messageQuery.isFetching} />
+            <MessageList
+                messages={messages}
+                isFetching={!messageQuery.isFetchedAfterMount && messageQuery.isFetching}
+            />
             <Divider
                 sx={{
                     marginTop: "64px",

@@ -75,7 +75,7 @@ export const sendToken = async (
             value: ethers.utils.parseEther(amount.toString()),
         });
     } else {
-        const contract = new ethers.Contract(token.contractAddress.toJSON(), erc20ABI, provider);
+        const contract = new ethers.Contract(token.contractAddress.toString(), erc20ABI, provider);
         const tokenContract = contract.connect(signer);
         request = await tokenContract.transfer(to, amount);
     }
