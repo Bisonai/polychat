@@ -82,11 +82,11 @@ export interface IBalance {
     percentChange24h?: number;
 }
 
-export interface IAccountCreateDto extends Omit<IAccount, "id" | "createdAt" | "updatedAt"> {}
+export type IAccountCreateDto = Omit<IAccount, "id" | "createdAt" | "updatedAt">;
 
 export interface IChannelCreateDTO {
     channelName: string;
     members: [number];
 }
 
-export interface IMessageCreateDto extends Omit<IMessage, "id" | "createdAt" | "deletedAt"> {}
+export type IMessageCreateDto = Omit<IMessage, "id" | "createdAt" | "deletedAt">;

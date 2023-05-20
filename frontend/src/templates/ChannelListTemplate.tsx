@@ -24,8 +24,7 @@ export const ChannelListTemplate = (): ReactElement => {
 
     return (
         <Box position={"relative"} width={"100%"} height={"calc(100vh - 128px)"}>
-            {/*//@ts-ignore */}
-            <ChannelList channelQuery={channelQuery} />
+            <ChannelList channelQuery={channelQuery as any} />
             <Grid position={"absolute"} right={"0px"} bottom={"10px"}>
                 <IconButton>
                     <StyledSpeedDial
