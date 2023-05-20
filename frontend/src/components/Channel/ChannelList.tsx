@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import { useRouter } from "next/router";
 import { IChannel } from "@src/types";
 import { UseQueryResult } from "react-query";
-import { Grid, Skeleton } from "@mui/material";
+import { Box, Grid, Skeleton } from "@mui/material";
 import { getRandomProfileImage, shortenAddress } from "@src/lib/utils";
 import { useAccount } from "wagmi";
 
@@ -62,7 +62,7 @@ export default function ChannelList({
                             <ListItemText
                                 primary={chatList.channelName || "No name"}
                                 secondary={
-                                    <React.Fragment>
+                                    <Box>
                                         <Typography
                                             sx={{ display: "inline" }}
                                             component="span"
@@ -83,7 +83,7 @@ export default function ChannelList({
                                                 .join(", ")}
                                         </Typography>
                                         {` — ${chatList.lastMessage || "(empty chat)"}`}
-                                    </React.Fragment>
+                                    </Box>
                                 }
                             />
                         </ListItem>

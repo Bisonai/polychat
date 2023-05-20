@@ -3,14 +3,15 @@ import ChatMsg from "@mui-treasury/components/chatMsg/ChatMsg";
 import { IMessage } from "@src/types";
 import { useAccount } from "wagmi";
 import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
+import InsertEmoticonTwoToneIcon from "@mui/icons-material/InsertEmoticonTwoTone";
 import {
-    Avatar,
     Box,
     Button,
     Card,
     CardActions,
     CardContent,
     CardMedia,
+    CircularProgress,
     Grid,
     Typography,
 } from "@mui/material";
@@ -21,7 +22,13 @@ import { EvmAddress, EvmChain } from "moralis/common-evm-utils";
 
 type IMessageGroup = IMessage[][];
 
-export const MessageList = ({ messages }: { messages: IMessage[] }) => {
+export const MessageList = ({
+    messages,
+    isFetching,
+}: {
+    messages: IMessage[];
+    isFetching: boolean;
+}) => {
     const messageList: IMessageGroup = [];
     messages
         .sort((a: IMessage, b: IMessage) => Number(a.id) - Number(b.id))
@@ -44,8 +51,37 @@ export const MessageList = ({ messages }: { messages: IMessage[] }) => {
 
     return (
         <Box position={"relative"} padding={4} paddingBottom={"80px"} id="message-list">
-            {!messageList.length ? (
-                "No messages yet."
+            {isFetching ? (
+                <Box width={"100%"} display={"flex"} justifyContent={"center"} marginTop={20}>
+                    <CircularProgress size={100} />
+                </Box>
+            ) : !messageList.length ? (
+                <Box
+                    width={"100%"}
+                    height={"100%"}
+                    marginTop={12}
+                    textAlign={"center"}
+                    justifyContent={"center"}
+                    display={"flex"}
+                    alignItems={"center"}
+                    flexDirection={"column"}
+                >
+                    <Grid width={100} height={100} pb={2}>
+                        <InsertEmoticonTwoToneIcon
+                            sx={{
+                                color: "#8839ec",
+                                textAlign: "center",
+                                width: "100%",
+                                height: "auto",
+                                opacity: 0.3,
+                            }}
+                        />
+                    </Grid>
+                    <Typography variant={"h6"} align="center" color={"#d4d4d8"}>
+                        No messages found. <br />
+                        You can start a conversation by sending a message.
+                    </Typography>
+                </Box>
             ) : (
                 <>
                     {messageList.map((msgs, key) => {

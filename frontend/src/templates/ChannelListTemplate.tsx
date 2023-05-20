@@ -14,11 +14,14 @@ import {
 } from "@mui/material";
 import { createChannel, getAccounts, getChannels } from "@src/lib/api";
 import { ReactElement, useRef, useState } from "react";
-import { useQuery } from "wagmi";
+import { useAccount, useQuery } from "wagmi";
 import SpeedDial from "@mui/material/SpeedDial";
 import { SelectForm } from "@components/Form/SelecteForm";
 import SendIcon from "@mui/icons-material/Send";
 import { IChannel, IChannelCreateDTO } from "@src/types";
+import { toast } from "react-hot-toast";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
     position: "absolute",
@@ -49,6 +52,8 @@ export const ChannelListTemplate = (): ReactElement => {
     const textInputRef = useRef<HTMLInputElement>(null);
     const [memberIDs, setMemberIDs] = useState<number[]>([]);
 
+    const { address } = useAccount();
+
     const channelQuery = useQuery(["channels"], {
         queryFn: getChannels,
     });
@@ -56,6 +61,7 @@ export const ChannelListTemplate = (): ReactElement => {
     const accountsQuery = useQuery(["accounts"], {
         queryFn: getAccounts,
     });
+    const accounts = accountsQuery.data || [];
 
     const handleCreateChannelClicked = () => {
         console.log("handleCreateChannelClicked");
@@ -63,27 +69,34 @@ export const ChannelListTemplate = (): ReactElement => {
     };
 
     const handleCreateButtonClicked = async () => {
-        const name = textInputRef.current.value ?? " ";
+        const channelName = textInputRef.current.value ?? " ";
 
         console.log("create channel, memberIds: ", memberIDs);
+        // Append my address to the member list at last
+        const myAccountId = accounts.find(
+            (account) => account?.address?.toLowerCase() == address?.toLowerCase(),
+        )?.id;
+        if (!myAccountId) {
+            return accountsQuery.refetch();
+        }
+        const members: number[] = [...memberIDs, myAccountId];
         const newChannelInfo: IChannelCreateDTO = {
-            channelName: name,
-            members: memberIDs,
+            channelName,
+            members,
         };
-
         await createChannel(newChannelInfo)
             .then((res) => {
-                console.log("success creating a channel");
+                toast.success("Channel created!");
                 setOpenCreateChannelModal(false);
+                channelQuery.refetch();
             })
             .catch((err) => {
+                toast.error("Failed to create channel");
                 console.log(err);
             });
     };
-    const handleSelectMember = (memberId: number) => {
-        const newMemberIds = [...memberIDs, memberId];
-
-        setMemberIDs(newMemberIds);
+    const handleSelectMember = (memberId: number[]) => {
+        setMemberIDs(memberId);
     };
 
     const renderCreateChannelModal = () => (
@@ -95,6 +108,7 @@ export const ChannelListTemplate = (): ReactElement => {
                 <TextField
                     inputRef={textInputRef}
                     sx={{ mb: 2 }}
+                    fullWidth
                     id="outlined-basic"
                     label="Title"
                     variant="outlined"
@@ -103,22 +117,22 @@ export const ChannelListTemplate = (): ReactElement => {
                     <Skeleton />
                 ) : (
                     <SelectForm
-                        accounts={accountsQuery.data}
+                        accounts={accounts.filter(
+                            (account) => account?.address?.toLowerCase() != address?.toLowerCase(),
+                        )}
                         handleSelectMember={handleSelectMember}
                     ></SelectForm>
                 )}
                 <Button
                     sx={{
-                        width: 140,
-                        height: 48,
+                        height: 56,
                         borderRadius: "8px",
-                        color: "#FFFFFF",
-                        background: "#4856FC",
                         my: 2,
                     }}
                     endIcon={<SendIcon />}
                     variant="contained"
                     onClick={handleCreateButtonClicked}
+                    fullWidth
                 >
                     Create
                 </Button>
@@ -129,6 +143,34 @@ export const ChannelListTemplate = (): ReactElement => {
     return (
         <div>
             <Box position={"relative"} width={"100%"} height={"calc(100vh - 128px)"}>
+                <Box width={"100%"} height={"100px"} boxShadow={1} marginBottom={2}>
+                    <Swiper spaceBetween={50} slidesPerView={1}>
+                        {[
+                            {
+                                fileName: "ad-polygon.webp",
+                                link: "https://www.polygon.technology/",
+                            },
+                            { fileName: "ad-nearprotocol.jpeg", link: "https://near.org/" },
+                            { fileName: "ad-avalanche.png", link: "https://www.avalabs.org/" },
+                            { fileName: "ad-bnb.png", link: "https://www.binance.com/en" },
+                            { fileName: "ad-bifrost.png", link: "https://bifrost.finance/" },
+                        ].map(({ fileName, link }, index) => (
+                            <SwiperSlide key={index}>
+                                <Button href={link} target="_blank" fullWidth>
+                                    <img
+                                        width={"100%"}
+                                        height={"100px"}
+                                        src={"/images/" + fileName}
+                                        style={{
+                                            objectFit: "cover",
+                                            objectPosition: "center",
+                                        }}
+                                    />
+                                </Button>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                </Box>
                 {channelQuery?.data?.length > 0 ? (
                     <ChannelList channelQuery={channelQuery as any} />
                 ) : (
@@ -145,7 +187,7 @@ export const ChannelListTemplate = (): ReactElement => {
                     </Box>
                 )}
 
-                <Grid position={"absolute"} right={"0px"} bottom={"10px"}>
+                <Grid position={"fixed"} right={"0px"} bottom={"80px"}>
                     <IconButton onClick={handleCreateChannelClicked}>
                         <StyledSpeedDial
                             ariaLabel="Add Channel"

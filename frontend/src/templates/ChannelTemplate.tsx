@@ -15,6 +15,7 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
     const messageQuery = useQuery(["messages", channelId], {
         queryFn: () => getMessages(channelId),
     });
+
     const messages = messageQuery?.data || [];
     const membersMap = messages
         .map((m) => ({
@@ -44,12 +45,9 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
                 });
                 console.log("data", data, data?.channelId, channelId);
                 if (data?.channelId == channelId) {
-                    console.log("channelId", event.data.channelId);
                     // Scroll to the bottom
-                    const element = document.getElementById("message-list");
-                    console.log(element, element.scrollHeight);
                     window?.scrollTo({
-                        top: element?.scrollHeight + 180,
+                        top: document.getElementById("message-list")?.scrollHeight + 180,
                         behavior: "smooth",
                     });
                 }
@@ -65,9 +63,17 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
         }
     }, [channelId]);
 
+    useEffect(() => {
+        setTimeout(() => {
+            window?.scrollTo({
+                top: document.getElementById("message-list")?.scrollHeight + 180,
+            });
+        }, 500);
+    }, []);
+
     return (
         <Grid>
-            <MessageList messages={messages} />
+            <MessageList messages={messages} isFetching={messageQuery.isFetching} />
             <Divider
                 sx={{
                     marginTop: "64px",
