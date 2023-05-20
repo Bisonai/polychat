@@ -3,7 +3,7 @@ name: Glitch Cinder API Deploy to Amazon ECR
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - "api/**"
 
