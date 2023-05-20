@@ -155,18 +155,29 @@ export class ApiService {
     console.log("id:", id);
     const messages = await this.prisma.messages.findMany({
       where: { channel_id: +id },
+      include: {
+        accounts: true,
+      },
       orderBy: { id: "asc" },
     });
     let data: IMessage[] = [];
 
     await Promise.all(
       await messages.map(async (message) => {
+        const account: IAccount = {
+          id: message.accounts.id,
+          address: message.accounts.address,
+          name: message.accounts.name,
+          img: message.accounts.img,
+          createdAt: message.accounts.created_at,
+          updatedAt: message.accounts.updated_at
+        }
         const _message: IMessage = {
           id: message.id,
           channelId: message.channel_id,
           accountId: message.account_id,
           accountAddress: message.account_address,
-          contractAddress: message.account_address,
+          contractAddress: message.contract_address,
           messageType: message.message_type as IMessageType,
           txHash: message.tx_hash,
           tokenValue: message.token_value,
@@ -175,6 +186,7 @@ export class ApiService {
           message: message.message,
           createdAt: message.created_at,
           deletedAt: message.deleted_at,
+          account
         };
         data.push(_message);
       })
