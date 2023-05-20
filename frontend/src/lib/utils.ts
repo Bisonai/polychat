@@ -54,9 +54,18 @@ export const sendNFT = async (connector: Connector, nft: EvmNft, to: string): Pr
 export const sendToken = async (connector: Connector, token: Erc20Token, amount: number, to: string): Promise<TransactionReceipt> => {
     const provider = new ethers.providers.Web3Provider(await connector.getProvider({ chainId: 80001 }))
     const signer = await provider.getSigner()
-    const contract = new ethers.Contract(token.contractAddress.toJSON(), erc20ABI, provider)
-    const tokenContract = contract.connect(signer)
-    const request = await tokenContract.transfer(to, amount)
+    let request
+    if (token.symbol === "MATIC") {
+        request = await signer.sendTransaction({
+            to: to,
+            value: ethers.utils.parseEther(amount.toString())
+        })
+    } else {
+        const contract = new ethers.Contract(token.contractAddress.toJSON(), erc20ABI, provider)
+        const tokenContract = contract.connect(signer)
+        request = await tokenContract.transfer(to, amount)
+    }
+
     return request.wait()
 }
 
