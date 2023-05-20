@@ -42,9 +42,9 @@ import {
     Typography,
 } from "@mui/material";
 import { IAccount } from "@src/types";
-import { Connector, useAccount, useQuery } from "wagmi";
+import { Connector, useAccount, useBalance, useQuery } from "wagmi";
 import Moralis from "moralis";
-import { Erc20Token, Erc20Value, EvmNft } from "moralis/common-evm-utils";
+import { Erc20Token, Erc20Value, EvmChain, EvmNft } from "moralis/common-evm-utils";
 import { sendNFT, sendToken, shortenAddress } from "@src/lib/utils";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { usePublicClient, useWalletClient } from "wagmi";
@@ -215,7 +215,7 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
     const requestNFTsQuery = useQuery(["nfts", address], {
         queryFn: async () => {
             const request = await Moralis.EvmApi.nft.getWalletNFTs({
-                chain: "0x13881",
+                chain: EvmChain.MUMBAI,
                 address,
             });
             console.log(request.result);
@@ -226,7 +226,7 @@ export const SendStepper = ({ channelId, isNFT }: { channelId: string; isNFT: bo
     const requestTokensQuery = useQuery(["tokens", address], {
         queryFn: async () => {
             const request = await Moralis.EvmApi.token.getWalletTokenBalances({
-                chain: "0x13881",
+                chain: EvmChain.MUMBAI,
                 address,
             });
             console.log(request.result);
@@ -480,6 +480,8 @@ export const TokenList = ({
 }) => {
     const [selectedToken, setSelectedToken] = React.useState<Erc20Value | null>(null);
     const [amount, setAmount] = React.useState(0);
+    const { address } = useAccount();
+    const balanceQuery = useBalance({ address });
 
     const handleSendToken = () => {
         if (!selectedToken) {
@@ -501,67 +503,121 @@ export const TokenList = ({
 
     return (
         <List dense sx={{ width: "100%", bgcolor: "background.paper" }}>
-            {tokens.map((erc20Value, key) => {
-                const token = erc20Value.token;
-                const amount = erc20Value.amount;
-
-                return selectedToken ? (
-                    <Grid display={"flex"} flexDirection={"column"} gap={"8px"}>
-                        <Input
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    {selectedToken.token.symbol}
-                                </InputAdornment>
+            {selectedToken ? (
+                <Grid display={"flex"} flexDirection={"column"} gap={"8px"}>
+                    <Input
+                        endAdornment={
+                            <InputAdornment position="end">
+                                {selectedToken.token.symbol}
+                            </InputAdornment>
+                        }
+                        type="number"
+                        placeholder="Amount"
+                        inputProps={{
+                            "aria-label": selectedToken.token.symbol,
+                            max: formatUnits(selectedToken.amount.toBigInt()),
+                            min: 0,
+                        }}
+                        onChange={(e) => {
+                            setAmount(Number(e.target.value));
+                        }}
+                    />
+                    <Button
+                        variant="outlined"
+                        size="large"
+                        color="primary"
+                        sx={{ height: "56px", borderRadius: "8px" }}
+                        fullWidth
+                        disabled={disabled}
+                        onClick={handleSendToken}
+                    >
+                        SEND
+                    </Button>
+                </Grid>
+            ) : (
+                <>
+                    {balanceQuery.data && (
+                        <ListItem
+                            onClick={() =>
+                                setSelectedToken(
+                                    Erc20Value.create(balanceQuery?.data?.value, {
+                                        decimals: 18,
+                                        token: {
+                                            decimals: 18,
+                                            name: "MATIC",
+                                            chain: EvmChain.MUMBAI,
+                                            symbol: balanceQuery?.data?.symbol,
+                                            contractAddress:
+                                                "0x0000000000000000000000000000000000001010",
+                                        },
+                                    }),
+                                )
                             }
-                            type="number"
-                            placeholder="Amount"
-                            inputProps={{
-                                "aria-label": selectedToken.token.symbol,
-                                max: formatUnits(selectedToken.amount.toBigInt()),
-                                min: 0,
-                            }}
-                            onChange={(e) => {
-                                setAmount(Number(e.target.value));
-                            }}
-                        />
-                        <Button
-                            variant="outlined"
-                            size="large"
-                            color="primary"
-                            sx={{ height: "56px", borderRadius: "8px" }}
-                            fullWidth
-                            disabled={disabled}
-                            onClick={handleSendToken}
+                            disablePadding
                         >
-                            SEND
-                        </Button>
-                    </Grid>
-                ) : (
-                    <ListItem onClick={() => setSelectedToken(erc20Value)} key={key} disablePadding>
-                        <ListItemButton>
-                            <ListItemAvatar>
-                                <Avatar alt={token.name} src={token.thumbnail} />
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={
-                                    <>
-                                        <Typography>{token.name}</Typography>
-                                        <Typography>
-                                            {formatUnits(erc20Value.amount.toBigInt())}{" "}
-                                            {token.symbol}
+                            <ListItemButton>
+                                <ListItemAvatar>
+                                    <Avatar alt={"ETH"} src={balanceQuery?.data?.symbol} />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={
+                                        <>
+                                            <Typography>{"MATIC"}</Typography>
+                                            <Typography>
+                                                {parseFloat(
+                                                    formatUnits(balanceQuery?.data?.value),
+                                                ).toFixed(3)}{" "}
+                                                {balanceQuery?.data?.symbol}
+                                            </Typography>
+                                        </>
+                                    }
+                                    secondary={
+                                        <Typography variant="body2" color="text.secondary">
+                                            {shortenAddress(
+                                                "0x0000000000000000000000000000000000001010",
+                                            )}
                                         </Typography>
-                                    </>
-                                }
-                                secondary={
-                                    <Typography variant="body2" color="text.secondary">
-                                        {shortenAddress(token.contractAddress.toJSON())}
-                                    </Typography>
-                                }
-                            />
-                        </ListItemButton>
-                    </ListItem>
-                );
-            })}
+                                    }
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    )}
+                    {tokens.map((erc20Value, key) => {
+                        const token = erc20Value.token;
+                        return (
+                            <ListItem
+                                onClick={() => setSelectedToken(erc20Value)}
+                                key={key}
+                                disablePadding
+                            >
+                                <ListItemButton>
+                                    <ListItemAvatar>
+                                        <Avatar alt={token.name} src={token.thumbnail} />
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={
+                                            <>
+                                                <Typography>{token.name}</Typography>
+                                                <Typography>
+                                                    {parseFloat(
+                                                        formatUnits(erc20Value.amount.toBigInt()),
+                                                    ).toFixed(3)}{" "}
+                                                    {token.symbol}
+                                                </Typography>
+                                            </>
+                                        }
+                                        secondary={
+                                            <Typography variant="body2" color="text.secondary">
+                                                {shortenAddress(token.contractAddress.toJSON())}
+                                            </Typography>
+                                        }
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        );
+                    })}
+                </>
+            )}
         </List>
     );
 };
