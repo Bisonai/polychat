@@ -145,4 +145,35 @@ export class ApiService {
     );
     return [...data].sort((a, b) => b.id - a.id);
   }
+
+  async getAllChannelMessage(id: number): Promise<IMessage[]> {
+    console.log("id:", id);
+    const messages = await this.prisma.messages.findMany({
+      where: { channel_id: +id },
+      orderBy: { id: "asc" },
+    });
+    let data: IMessage[] = [];
+
+    await Promise.all(
+      await messages.map(async (message) => {
+        const _message: IMessage = {
+          id: message.id,
+          channelId: message.channel_id,
+          accountId: message.account_id,
+          accountAddress: message.account_address,
+          contractAddress: message.account_address,
+          messageType: message.message_type,
+          txHash: message.tx_hash,
+          tokenValue: message.token_value,
+          nftTokenId: message.nft_token_id,
+          nftTokenUri: message.nft_token_id,
+          message: message.message,
+          createdAt: message.created_at,
+          deletedAt: message.deleted_at,
+        };
+        data.push(_message);
+      })
+    );
+    return data;
+  }
 }

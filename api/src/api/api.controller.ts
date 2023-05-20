@@ -63,6 +63,14 @@ export class ApiController {
   async getAllList(): Promise<IChannel[]> {
     return await this.apiService.getAllList();
   }
+
+  @Get("/channel/:id")
+  @ApiOperation({ operationId: "getAllList" })
+  @ApiBadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async getChannelMessages(@Param("id") id: number): Promise<IMessage[]> {
+    return await this.apiService.getAllChannelMessage(id);
+  }
 }
 
 
