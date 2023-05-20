@@ -1,6 +1,8 @@
-## Glitch Cinder test 22
+## Glitch Polychat.in 
 
 yarn install
+
+npx prisma generate
 
 yarn build
 
