@@ -11,6 +11,7 @@ import { IChannel } from "@src/types";
 import { UseQueryResult } from "react-query";
 import { Grid, Skeleton } from "@mui/material";
 import { shortenAddress } from "@src/lib/utils";
+import { useAccount } from "wagmi";
 
 export default function ChannelList({
     channelQuery,
@@ -22,7 +23,7 @@ export default function ChannelList({
     const handleChannelClick = (chatId: number) => {
         router.push(`/channel/${chatId}`);
     };
-    console.log(channelList);
+    const { address } = useAccount();
     return (
         <List sx={{ width: "100%", bgcolor: "background.paper" }}>
             {channelQuery.isFetching ? (
@@ -66,6 +67,11 @@ export default function ChannelList({
                                             color="text.primary"
                                         >
                                             {chatList.members
+                                                .filter(
+                                                    (member) =>
+                                                        member.address.toLowerCase() !==
+                                                        address.toLowerCase(),
+                                                )
                                                 .map(
                                                     (member) =>
                                                         member.name ||

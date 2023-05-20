@@ -65,6 +65,8 @@ export default function MessageInput({
     const { address, connector } = useAccount();
     const [text, setText] = React.useState("");
     const [loading, setLoading] = React.useState(false);
+
+    const accountId = members?.find((m) => m.address.toLowerCase() === address.toLowerCase())?.id;
     const handleSendMessage = async () => {
         if (text.toString().trim() === "") {
             return;
@@ -74,7 +76,7 @@ export default function MessageInput({
         await createMessage({
             channelId: Number(channelId),
             message: text,
-            accountId: 5,
+            accountId,
             accountAddress: address,
             contractAddress: undefined,
             messageType: IMessageType.text,
@@ -144,6 +146,7 @@ export default function MessageInput({
                                 isNFT={sendType === "NFT"}
                                 channelId={channelId}
                                 members={members}
+                                accountId={accountId}
                             />
                         ) : (
                             <ButtonGroup orientation="vertical" variant="outlined" fullWidth>
@@ -189,8 +192,9 @@ export default function MessageInput({
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             if (!e.shiftKey) {
-                                handleSendMessage();
                                 e.stopPropagation();
+                                e.preventDefault();
+                                handleSendMessage();
                                 return false;
                             }
                         }
@@ -214,10 +218,12 @@ export const SendStepper = ({
     members,
     channelId,
     isNFT,
+    accountId,
 }: {
     members: Omit<IAccount, "createdAt" | "updatedAt" | "img">[];
     channelId: string;
     isNFT: boolean;
+    accountId: number;
 }) => {
     const stepMap = {
         "0": "Select User",
@@ -270,20 +276,40 @@ export const SendStepper = ({
         if (step === 2) {
             if (isNFT) {
                 sendNFT(connector, selectedNFT as EvmNft, selectedUser)
-                    .then((result) => {
-                        console.log(result);
-                        // TODO: Send Tx Hash
-                        setTxHash(result.transactionHash);
+                    .then((receipt) => {
+                        createMessage({
+                            channelId: Number(channelId),
+                            message: "",
+                            accountId,
+                            accountAddress: address,
+                            contractAddress: selectedNFT.tokenAddress.toJSON(),
+                            messageType: IMessageType.nft,
+                            txHash: receipt.transactionHash,
+                            tokenValue: undefined,
+                            nftTokenId: selectedNFT.tokenId.toString(),
+                            nftTokenUri: selectedNFT.tokenUri,
+                        });
+                        setTxHash(receipt.transactionHash);
                     })
                     .catch((err) => {
                         setErr(err.message || "Unknown Error");
                     });
             } else {
                 sendToken(connector, selectedToken, amount, selectedUser)
-                    .then((result) => {
-                        console.log(result);
-                        // TODO: Send Tx Hash
-                        setTxHash(result.transactionHash);
+                    .then((receipt) => {
+                        createMessage({
+                            channelId: Number(channelId),
+                            message: "",
+                            accountId,
+                            accountAddress: address,
+                            contractAddress: selectedToken.contractAddress.toJSON(),
+                            messageType: IMessageType.token,
+                            txHash: receipt.transactionHash,
+                            tokenValue: amount,
+                            nftTokenId: undefined,
+                            nftTokenUri: undefined,
+                        });
+                        setTxHash(receipt.transactionHash);
                     })
                     .catch((err) => {
                         setErr(err.message || "Unknown Error");
@@ -305,12 +331,10 @@ export const SendStepper = ({
             <Divider style={{ margin: "16px" }} />
             <Grid>
                 {step === 0 && (
-                    <RatioList
-                        title=""
-                        options={members.reduce((acc, member) => {
-                            acc[member.address] = member.name;
-                            return acc;
-                        }, {})}
+                    <UserList
+                        members={members.filter(
+                            (m) => m.address.toLowerCase() !== address.toLowerCase(),
+                        )}
                         onSelect={(value) => {
                             setSelectedUser(value);
                             setStep(1);
@@ -332,6 +356,15 @@ export const SendStepper = ({
                                     />
                                 ))}
                             </Grid>
+                        ) : !requestNFTsQuery?.data?.length ? (
+                            <Box
+                                height={56 * 4}
+                                display={"flex"}
+                                alignItems={"center"}
+                                justifyContent={"center"}
+                            >
+                                <Typography align="center">No NFTs found</Typography>
+                            </Box>
                         ) : (
                             <NFTList
                                 nfts={requestNFTsQuery.data || []}
@@ -400,6 +433,36 @@ export const SendStepper = ({
                 )}
             </Grid>
         </Box>
+    );
+};
+
+export const UserList = ({
+    members,
+    onSelect,
+}: {
+    members: Omit<IAccount, "createdAt" | "updatedAt" | "img">[];
+    onSelect: (value: string) => void;
+}) => {
+    return (
+        <>
+            {members.map((member, key) => (
+                <ListItem key={key} onClick={() => onSelect(member.address)} disablePadding>
+                    <ListItemButton>
+                        <ListItemAvatar>
+                            <Avatar alt={member.name} src={member.name} />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={<Typography>{member.name}</Typography>}
+                            secondary={
+                                <Typography variant="body2" color="text.secondary">
+                                    {member?.address ? shortenAddress(member?.address || "") : ""}
+                                </Typography>
+                            }
+                        />
+                    </ListItemButton>
+                </ListItem>
+            ))}
+        </>
     );
 };
 

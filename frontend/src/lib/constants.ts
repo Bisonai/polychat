@@ -1,1 +1,1 @@
-export const BE_URL = 'http://localhost:8888';
+export const BE_URL = process.env.NEXT_PUBLIC_BE_URL || "http://localhost:8888"
