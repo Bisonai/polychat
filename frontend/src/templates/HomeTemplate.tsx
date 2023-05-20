@@ -318,7 +318,7 @@ export const HomeTemplate = (): ReactElement => {
                         }}
                         variant="contained"
                     >
-                        {"Withdraw"}
+                        {"Transfer"}
                     </Button>
                 </Grid>
             </Container>
