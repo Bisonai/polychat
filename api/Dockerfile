@@ -19,7 +19,7 @@ COPY src src
 COPY prisma prisma
 
 RUN yarn install
-
+RUN yarn add @prisma/client
 RUN npx prisma generate
 
 RUN yarn build

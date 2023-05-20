@@ -14,7 +14,13 @@ export class ApiService {
 
   async createAccount(_accountCreateDto: IAccountCreateDto): Promise<IAccount> {
     const { address, name } = _accountCreateDto;
-    const res = await this.prisma.accounts.create({ data: { address, name } });
+ 
+    const res = await this.prisma.accounts.upsert({
+      where: { address },
+      create: { address, name },
+      update: { name }
+    });
+
     const account: IAccount = {
       id: res.id,
       address: res.address,
