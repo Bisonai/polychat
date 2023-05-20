@@ -15,7 +15,6 @@ export const LandingTemplate = () => {
     };
     const handleSelectWallet = (walletName: string) => {
         const connector = connecters.Metamask;
-        console.log(connector);
         connect({
             chainId: 80001,
             connector,
@@ -32,6 +31,8 @@ export const LandingTemplate = () => {
             flexDirection={"column"}
             sx={{ height: "calc(100vh - 64px)" }}
             justifyContent={"space-between"}
+            width={"100%"}
+            p={2}
         >
             <Grid
                 flex={1}
@@ -39,6 +40,7 @@ export const LandingTemplate = () => {
                 flexDirection={"column"}
                 justifyContent={"center"}
                 alignItems={"center"}
+                width={"100%"}
             >
                 {activeStep === 0 && (
                     <>
@@ -49,22 +51,30 @@ export const LandingTemplate = () => {
                     </>
                 )}
                 {activeStep === 1 && (
-                    <Grid display={"flex"} flexDirection={"column"} gap={"12px"}>
+                    <Grid
+                        display={"flex"}
+                        flexDirection={"column"}
+                        gap={"12px"}
+                        width={"100%"}
+                        maxWidth={"500px"}
+                    >
                         <Button
-                            variant="contained"
+                            variant="outlined"
                             size="large"
                             color="primary"
-                            sx={{ height: "40px", borderRadius: "8px" }}
+                            sx={{ height: "56px", borderRadius: "8px" }}
                             onClick={() => handleSelectWallet("Metamask")}
+                            fullWidth
                         >
                             Metamask
                         </Button>
                         <Button
-                            variant="contained"
+                            variant="outlined"
                             size="large"
                             color="primary"
-                            sx={{ height: "40px", borderRadius: "8px" }}
+                            sx={{ height: "56px", borderRadius: "8px" }}
                             onClick={() => handleSelectWallet("Coinbase")}
+                            fullWidth
                         >
                             Coinbase
                         </Button>
