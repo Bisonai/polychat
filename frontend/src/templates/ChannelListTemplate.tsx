@@ -144,7 +144,14 @@ export const ChannelListTemplate = (): ReactElement => {
         <div>
             <Box position={"relative"} width={"100%"} height={"calc(100vh - 128px)"}>
                 <Box width={"100%"} height={"100px"} boxShadow={1} marginBottom={2}>
-                    <Swiper spaceBetween={50} slidesPerView={1}>
+                    <Swiper
+                        spaceBetween={50}
+                        slidesPerView={1}
+                        autoplay={{
+                            delay: 3000,
+                            disableOnInteraction: false,
+                        }}
+                    >
                         {[
                             {
                                 fileName: "ad-polygon.webp",
