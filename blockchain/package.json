@@ -11,7 +11,8 @@
     "deploy": "hardhat run scripts/deploy.ts",
     "deploy-nft": "hardhat run scripts/deploy-nft.ts",
     "deploy-polyChat": "hardhat run scripts/deploy-polyChat.ts",
-    "deploy-adRevenueShare": "hardhat run scripts/deploy-adRevenueShare.ts"
+    "deploy-adRevenueShare": "hardhat run scripts/deploy-adRevenueShare.ts",
+    "deploy-dao": "hardhat run scripts/deploy-dao.ts"
   },
   "author": "Bisonai",
   "devDependencies": {
