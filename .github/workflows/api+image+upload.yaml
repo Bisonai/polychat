@@ -1,4 +1,4 @@
-name: Glitch Cinder API Deploy to Amazon ECR
+name: Glitch PolyChat API Deploy to Amazon ECR
 
 on:
   push:

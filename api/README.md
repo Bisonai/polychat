@@ -1,7 +1,5 @@
 ## Glitch Polychat.in 
 
-test 
-
 yarn install
 
 npx prisma generate
