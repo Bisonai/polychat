@@ -5,8 +5,8 @@ import { AppModule } from "./app.module";
 
 export function createSwaggerDocument(app: INestApplication): OpenAPIObject {
   const config = new DocumentBuilder()
-    .setTitle("Polygon Cinder Private Api")
-    .setDescription("Polygon Cinder Api")
+    .setTitle("Polygon PolyChat Private Api")
+    .setDescription("Polygon PolyChat Api")
     .setVersion("1.0")
     .addBearerAuth()
     .build();
@@ -22,7 +22,7 @@ async function bootstrap() {
     cors: true,
   });
   SwaggerModule.setup("swagger", app, createSwaggerDocument(app), {
-    customSiteTitle: "Polygon Cinder",
+    customSiteTitle: "Polygon PolyChat",
   });
   await app.listen(8888, "0.0.0.0");
 }
