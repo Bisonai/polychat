@@ -1,27 +1,28 @@
-# node:18.12.1-alpine3.17
-#FROM node@sha256:b375b98d1dcd56f5783efdd80a4d6ff5a0d6f3ce7921ec99c17851db6cba2a93
+# Use the official Node.js Alpine image with the specified version
+FROM node:18.12.1-alpine
 
-# node:18.12.1-slim
-FROM node@sha256:0c3ea57b6c560f83120801e222691d9bd187c605605185810752a19225b5e4d9
+# Update the package repository and install curl
+RUN apk update && apk add --no-cache curl
 
-RUN apt-get update && apt-get install -y curl
-
+# Set the working directory to /app
 WORKDIR /app
 
-COPY package.json .
+# Copy package.json and yarn.lock to the working directory
+COPY package.json yarn.lock ./
 
-COPY yarn.lock .
+# Install dependencies
+RUN yarn install --frozen-lockfile
 
-COPY tsconfig.json .
+# Copy the remaining project files
+COPY tsconfig.json ./
+COPY src ./src
+COPY prisma ./prisma
 
-COPY src src
-
-COPY prisma prisma
-
-RUN yarn install
-RUN yarn add @prisma/client
+# Generate Prisma client
 RUN npx prisma generate
 
+# Build the application
 RUN yarn build
 
-CMD ["yarn start:dev"]
+# Set the command to start the application
+CMD ["yarn", "start"]

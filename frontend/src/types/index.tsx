@@ -29,6 +29,7 @@ export interface IMessage {
     message: string;
     createdAt?: string;
     deletedAt?: string;
+    account?: IAccount;
 }
 
 /**

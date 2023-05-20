@@ -6,4 +6,4 @@ npx prisma generate
 
 yarn build
 
-yarn start:dev
+yarn start
