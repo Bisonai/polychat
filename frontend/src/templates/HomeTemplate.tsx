@@ -1,9 +1,20 @@
-import { Box, Button, Container, Grid, Skeleton, Typography } from "@mui/material";
+import {
+    Alert,
+    Box,
+    Button,
+    Container,
+    Grid,
+    IconButton,
+    Input,
+    Skeleton,
+    Snackbar,
+    Typography,
+} from "@mui/material";
 import { ReactElement, useEffect, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import ChevronRight from "@mui/icons-material/ChevronRight";
 import MonetizationOn from "@mui/icons-material/MonetizationOn";
+import EditIcon from "@mui/icons-material/Edit";
 import { useAccount, useQuery } from "wagmi";
 import { IBalance } from "@src/types";
 import Moralis from "moralis";
@@ -12,9 +23,15 @@ import { getTokenPercentChangeIn24h, getTokenPriceInUSD, isEmpty } from "../lib/
 import { formatUnits } from "ethers/lib/utils";
 
 export const HomeTemplate = (): ReactElement => {
-    const { isConnected, connector, address } = useAccount();
+    const { isConnected, address } = useAccount();
     const [stateAddress, setStateAddress] = useState<string>();
     const [listOfPrice, setListOfPrice] = useState();
+    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+    const [editName, setEditName] = useState<boolean>(false);
+
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
 
     const requestNativeTokensQuery = useQuery(["NativeTokens", address], {
         queryFn: async () => {
@@ -77,14 +94,6 @@ export const HomeTemplate = (): ReactElement => {
         },
     });
 
-    const ContainedButton = ({ title }): ReactElement => {
-        return (
-            <Button sx={{ width: 150, height: 48 }} variant="contained">
-                {title}
-            </Button>
-        );
-    };
-
     const PriceChangePercentage = ({ curPrice, changeRate }): ReactElement => {
         if (isEmpty(curPrice) || isEmpty(changeRate)) {
             return;
@@ -100,26 +109,22 @@ export const HomeTemplate = (): ReactElement => {
     };
 
     const handleCopyAddress = () => {
-        navigator.clipboard.writeText(stateAddress);
+        navigator.clipboard
+            .writeText(stateAddress)
+            .then(() => setOpenSnackbar(true))
+            .catch((err) => console.error(err));
+    };
+
+    const handleEditName = () => {
+        console.log("editName: ", editName);
+        setEditName(!editName);
     };
 
     const TokenListTitle = (): ReactElement => {
         return (
-            <Grid container sx={{ justifyContent: "space-between", mb: 1 }}>
-                <Grid item>
-                    <Typography fontWeight={700}>Token</Typography>
-                </Grid>
-                <Grid item>
-                    <Grid container>
-                        <Grid item>
-                            <Typography fontWeight={500}>All Tokens</Typography>
-                        </Grid>
-                        <Grid item>
-                            <ChevronRight />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
+            <Typography sx={{ mb: 1 }} fontWeight={700}>
+                Token
+            </Typography>
         );
     };
 
@@ -196,9 +201,26 @@ export const HomeTemplate = (): ReactElement => {
     }): ReactElement => {
         return nativeBalance ? (
             <Container sx={{ p: 0, background: "#FFFFFF", padding: 2, borderRadius: 4 }}>
-                <Typography fontSize={18} fontWeight={700}>
-                    {name}
-                </Typography>
+                <Grid display={"flex"} sx={{ height: "34px", alignItems: "center" }}>
+                    {/* <Typography fontSize={18} fontWeight={700} sx={{ mr: 1 }}>
+                        {name}
+                    </Typography> */}
+                    <Input disableUnderline={!editName} defaultValue={name} />
+                    {editName ? (
+                        <Button
+                            sx={{ width: 30, height: 22, fontSize: 10 }}
+                            variant="contained"
+                            onClick={handleEditName}
+                        >
+                            Done
+                        </Button>
+                    ) : (
+                        <EditIcon
+                            sx={{ width: 20, height: 20, m: "8px", zIndex: 0 }}
+                            onClick={handleEditName}
+                        />
+                    )}
+                </Grid>
                 <Grid container spacing={2} sx={{ mb: 2 }}>
                     <Grid item xs={10}>
                         <Typography
@@ -209,13 +231,16 @@ export const HomeTemplate = (): ReactElement => {
                             {stateAddress}
                         </Typography>
                     </Grid>
-                    <Grid item xs={2}>
-                        <ContentCopyIcon onClick={() => handleCopyAddress()} />
-                    </Grid>
+                    <IconButton
+                        children={<ContentCopyIcon />}
+                        color="primary"
+                        onClick={handleCopyAddress}
+                    ></IconButton>
+                    {/* <ContentCopyIcon onClick={() => handleCopyAddress()} /> */}
                 </Grid>
                 <Grid sx={{ mb: 2 }}>
                     <Typography fontSize={32} fontWeight={600}>
-                        $ {getTotalTokenBalanceInUSD()}
+                        ${getTotalTokenBalanceInUSD()}
                     </Typography>
                     <PriceChangePercentage
                         curPrice={nativeBalance.valueInUSD}
@@ -223,8 +248,30 @@ export const HomeTemplate = (): ReactElement => {
                     />
                 </Grid>
                 <Grid container direction="row" justifyContent={"space-evenly"}>
-                    <ContainedButton title="Receive" />
-                    <ContainedButton title="Withdraw" />
+                    <Button
+                        sx={{
+                            width: 140,
+                            height: 48,
+                            borderRadius: "8px",
+                            color: "#4856FC",
+                            background: "#F0F1FF",
+                        }}
+                        variant="contained"
+                    >
+                        {"Receive"}
+                    </Button>
+                    <Button
+                        sx={{
+                            width: 140,
+                            height: 48,
+                            borderRadius: "8px",
+                            color: "#FFFFFF",
+                            background: "#4856FC",
+                        }}
+                        variant="contained"
+                    >
+                        {"Withdraw"}
+                    </Button>
                 </Grid>
             </Container>
         ) : (
@@ -254,7 +301,7 @@ export const HomeTemplate = (): ReactElement => {
     }, [isConnected]);
 
     return (
-        <Grid sx={{ p: 2, background: "#E2E2E8" }}>
+        <Grid sx={{ p: 2, background: "#E2E2E8", height: "100vh" }}>
             {requestNativeTokensQuery.isFetching ? (
                 <Skeleton />
             ) : (
@@ -278,6 +325,11 @@ export const HomeTemplate = (): ReactElement => {
                     <TokenListItem key={key} balance={erc20Token} />
                 ))
             )}
+            <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: "100%" }}>
+                    Address is successfully copied!
+                </Alert>
+            </Snackbar>
         </Grid>
     );
 };

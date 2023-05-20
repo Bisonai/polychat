@@ -7,7 +7,6 @@ import Typography from "@mui/material/Typography";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -82,7 +81,7 @@ export default function TopNavigation() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={handleProfile}>
+            {/* <MenuItem onClick={handleProfile}>
                 <IconButton
                     size="large"
                     aria-label="account of current user"
@@ -93,7 +92,7 @@ export default function TopNavigation() {
                     <AccountCircle />
                 </IconButton>
                 <p>Profile</p>
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem>
                 <IconButton size="large" aria-label="show 4 new mails" color="inherit">
                     <Badge badgeContent={4} color="error">
@@ -115,15 +114,6 @@ export default function TopNavigation() {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     <Typography
                         variant="h6"
                         noWrap
