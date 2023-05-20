@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { IChannel } from "@src/types";
 import { UseQueryResult } from "react-query";
 import { Grid, Skeleton } from "@mui/material";
-import { shortenAddress } from "@src/lib/utils";
+import { getRandomProfileImage, shortenAddress } from "@src/lib/utils";
 import { useAccount } from "wagmi";
 
 export default function ChannelList({
@@ -25,7 +25,7 @@ export default function ChannelList({
     };
     const { address } = useAccount();
     return (
-        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+        <List sx={{ width: "100%", bgcolor: "background.paper", paddingBottom: "100px" }}>
             {channelQuery.isFetching ? (
                 <Grid display={"flex"} flexDirection={"column"} gap={1}>
                     {Array.from(Array(8).keys()).map((key) => (
@@ -54,10 +54,13 @@ export default function ChannelList({
                             onClick={() => handleChannelClick(chatList.id)}
                         >
                             <ListItemAvatar>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                                <Avatar
+                                    alt={chatList.channelName}
+                                    src={getRandomProfileImage(chatList?.members?.[0]?.address)}
+                                />
                             </ListItemAvatar>
                             <ListItemText
-                                primary={chatList.channelName}
+                                primary={chatList.channelName || "No name"}
                                 secondary={
                                     <React.Fragment>
                                         <Typography
@@ -79,7 +82,7 @@ export default function ChannelList({
                                                 )
                                                 .join(", ")}
                                         </Typography>
-                                        {` — ${chatList.lastMessage || ""}`}
+                                        {` — ${chatList.lastMessage || "(empty chat)"}`}
                                     </React.Fragment>
                                 }
                             />

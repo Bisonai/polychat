@@ -2,7 +2,9 @@ import {
     Alert,
     Box,
     Button,
+    ButtonGroup,
     Container,
+    Divider,
     Grid,
     IconButton,
     Input,
@@ -20,7 +22,12 @@ import { useAccount, useQuery } from "wagmi";
 import { IAccount, IBalance } from "@src/types";
 import Moralis from "moralis";
 import { EvmChain } from "moralis/common-evm-utils";
-import { getTokenPercentChangeIn24h, getTokenPriceInUSD, isEmpty } from "../lib/utils";
+import {
+    getTokenPercentChangeIn24h,
+    getTokenPriceInUSD,
+    isEmpty,
+    shortenAddress,
+} from "../lib/utils";
 import { formatUnits } from "ethers/lib/utils";
 import QRCode from "react-qr-code";
 import { createAccount } from "@src/lib/api";
@@ -209,7 +216,11 @@ export const HomeTemplate = (): ReactElement => {
             >
                 <Grid display={"flex"} flexDirection={"row"} gap={1}>
                     <Grid display={"flex"} alignItems={"center"}>
-                        <MonetizationOn sx={{ width: 32, height: 32 }} />
+                        {balance.symbol === "MATIC" ? (
+                            <img src={"/images/matic.webp"} width={32} height={32} />
+                        ) : (
+                            <MonetizationOn sx={{ width: 32, height: 32 }} />
+                        )}
                     </Grid>
                     <Grid>
                         <Grid>
@@ -227,9 +238,13 @@ export const HomeTemplate = (): ReactElement => {
                 <Grid display={"flex"} alignItems={"center"}>
                     <Grid>
                         <Typography fontSize={18} fontWeight={600}>
-                            {balance.quantity}
+                            {parseFloat(balance.quantity.toString()).toFixed(4)}
+                            &nbsp;
+                            <Typography component={"span"} fontSize={16} fontWeight={600}>
+                                {balance.symbol}
+                            </Typography>
                         </Typography>
-                        <Typography fontSize={12} color="#848590">
+                        <Typography fontSize={12} color="#848590" align="right">
                             ${balance.valueInUSD}
                         </Typography>
                     </Grid>
@@ -252,6 +267,7 @@ export const HomeTemplate = (): ReactElement => {
                         inputRef={textInputRef}
                         disableUnderline={!editName}
                         defaultValue={name}
+                        sx={{ fontSize: "20px", fontWeight: 600 }}
                     />
                     {editName ? (
                         <Button
@@ -268,18 +284,22 @@ export const HomeTemplate = (): ReactElement => {
                         />
                     )}
                 </Grid>
-                <Grid container spacing={2} sx={{ mb: 2 }}>
-                    <Grid item xs={10}>
-                        <Typography
-                            fontSize={12}
-                            color={"#9F9FA8"}
-                            sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                        >
-                            {stateAddress}
-                        </Typography>
-                    </Grid>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{ mb: 2, pl: 2, pt: 2 }}
+                    display="flex"
+                    alignItems={"center"}
+                >
+                    <Typography
+                        fontSize={14}
+                        color={"#9F9FA8"}
+                        sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                        {shortenAddress(stateAddress)}
+                    </Typography>
                     <IconButton
-                        children={<ContentCopyIcon />}
+                        children={<ContentCopyIcon sx={{ width: "20px" }} />}
                         color="primary"
                         onClick={handleCopyAddress}
                     ></IconButton>
@@ -295,31 +315,31 @@ export const HomeTemplate = (): ReactElement => {
                     />
                 </Grid>
                 <Grid container direction="row" justifyContent={"space-evenly"}>
-                    <Button
-                        sx={{
-                            width: 140,
-                            height: 48,
-                            borderRadius: "8px",
-                            color: "#4856FC",
-                            background: "#F0F1FF",
-                        }}
-                        variant="contained"
-                        onClick={handleQRModalTriggered}
-                    >
-                        {"Receive"}
-                    </Button>
-                    <Button
-                        sx={{
-                            width: 140,
-                            height: 48,
-                            borderRadius: "8px",
-                            color: "#FFFFFF",
-                            background: "#4856FC",
-                        }}
-                        variant="contained"
-                    >
-                        {"Transfer"}
-                    </Button>
+                    <ButtonGroup>
+                        <Button
+                            sx={{
+                                width: 160,
+                                height: 48,
+                                borderRadius: "8px",
+                                color: "#4856FC",
+                                background: "#F0F1FF",
+                            }}
+                            variant="contained"
+                            onClick={handleQRModalTriggered}
+                        >
+                            {"Receive"}
+                        </Button>
+                        <Button
+                            sx={{
+                                width: 160,
+                                height: 48,
+                                borderRadius: "8px",
+                            }}
+                            variant="contained"
+                        >
+                            {"Withdraw"}
+                        </Button>
+                    </ButtonGroup>
                 </Grid>
             </Container>
         ) : (
@@ -354,9 +374,9 @@ export const HomeTemplate = (): ReactElement => {
     }, [isConnected]);
 
     return (
-        <Grid sx={{ p: 2, background: "#E2E2E8", minHeight: "calc(100vh - 112px)" }}>
+        <Grid sx={{ p: 2, pt: 5, background: "#E2E2E8", minHeight: "calc(100vh - 112px)" }}>
             {requestNativeTokensQuery.isFetching ? (
-                <Skeleton height={218} />
+                <Skeleton height={218} sx={{ padding: 0 }} variant="rounded" />
             ) : (
                 <MainDashboard
                     name={account?.name}
@@ -365,19 +385,21 @@ export const HomeTemplate = (): ReactElement => {
             )}
             <Box height={30} />
             <TokenListTitle />
-            {requestNativeTokensQuery.isFetching && !requestNativeTokensQuery.data ? (
-                <Skeleton height={98} />
-            ) : (
-                <TokenListItem key={0} balance={requestNativeTokensQuery.data as IBalance} />
-            )}
+            <Box marginBottom={"80px"}>
+                {requestNativeTokensQuery.isFetching && !requestNativeTokensQuery.data ? (
+                    <Skeleton height={98} variant="rounded" />
+                ) : (
+                    <TokenListItem key={0} balance={requestNativeTokensQuery.data as IBalance} />
+                )}
 
-            {requestERC20TokensQuery.isFetching && isEmpty(requestERC20TokensQuery.data) ? (
-                <Skeleton height={98} />
-            ) : (
-                requestERC20TokensQuery?.data?.map((erc20Token, key) => (
-                    <TokenListItem key={key} balance={erc20Token} />
-                ))
-            )}
+                {requestERC20TokensQuery.isFetching && isEmpty(requestERC20TokensQuery.data) ? (
+                    <Skeleton height={98} variant="rounded" />
+                ) : (
+                    requestERC20TokensQuery?.data?.map((erc20Token, key) => (
+                        <TokenListItem key={key} balance={erc20Token} />
+                    ))
+                )}
+            </Box>
             <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: "100%" }}>
                     Address is successfully copied!

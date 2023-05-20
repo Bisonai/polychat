@@ -114,7 +114,22 @@ export const ChannelListTemplate = (): ReactElement => {
     return (
         <div>
             <Box position={"relative"} width={"100%"} height={"calc(100vh - 128px)"}>
-                <ChannelList channelQuery={channelQuery as any} />
+                {channelQuery?.data?.length > 0 ? (
+                    <ChannelList channelQuery={channelQuery as any} />
+                ) : (
+                    <Box width={"100%"} height={"100%"} marginTop={12} textAlign={"center"}>
+                        <img
+                            src="/images/warning.svg"
+                            alt="empty"
+                            style={{ width: "100%", maxWidth: "200px" }}
+                            height={"auto"}
+                        />
+                        <Typography variant={"h6"} align="center" color={"#d4d4d8"}>
+                            No Channel found
+                        </Typography>
+                    </Box>
+                )}
+
                 <Grid position={"absolute"} right={"0px"} bottom={"10px"}>
                     <IconButton onClick={handleCreateChannelClicked}>
                         <StyledSpeedDial
