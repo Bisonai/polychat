@@ -69,8 +69,8 @@ export default function ChannelList({
                                             {chatList.members
                                                 .filter(
                                                     (member) =>
-                                                        member.address.toLowerCase() !==
-                                                        address.toLowerCase(),
+                                                        member.address?.toLowerCase() !==
+                                                        address?.toLowerCase(),
                                                 )
                                                 .map(
                                                     (member) =>

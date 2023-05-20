@@ -97,7 +97,7 @@ export function getTokenPriceInUSD(listOfPrice, tokenQuantity, tokenSymbol): num
         const tokenInfo = listOfPrice.find((info) => info.symbol == tokenSymbol);
         return tokenInfo.quote.USD.price * tokenQuantity;
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         return 0;
     }
 }
@@ -109,7 +109,12 @@ export function getTokenPercentChangeIn24h(listOfPrice, tokenSymbol): number {
         const tokenInfo = listOfPrice.find((info) => info.symbol == tokenSymbol);
         return tokenInfo.quote.USD.percent_change_24h;
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         return 0;
     }
+}
+
+export function getRandomProfileImage(address: string | null | undefined) {
+    const index = address ? parseInt(`${address}`.slice(-2), 16) % 160 : 0;
+    return `/profile_400/profile_${index + 1}.jpg`;
 }

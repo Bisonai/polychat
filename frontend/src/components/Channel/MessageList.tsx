@@ -14,7 +14,7 @@ import {
     Grid,
     Typography,
 } from "@mui/material";
-import { shortenAddress } from "@src/lib/utils";
+import { getRandomProfileImage, shortenAddress } from "@src/lib/utils";
 import Moralis from "moralis";
 import axios from "axios";
 import { EvmAddress, EvmChain } from "moralis/common-evm-utils";
@@ -32,7 +32,7 @@ export const MessageList = ({ messages }: { messages: IMessage[] }) => {
                 return curr;
             }
             // 이전 메시지와 현재 메시지의 주인이 같다면
-            if (prev.accountAddress.toLowerCase() === curr.accountAddress.toLowerCase()) {
+            if (prev.accountAddress?.toLowerCase() === curr.accountAddress?.toLowerCase()) {
                 const lastIndex = messageList.length - 1;
                 messageList[lastIndex].push(curr);
             } else {
@@ -49,12 +49,18 @@ export const MessageList = ({ messages }: { messages: IMessage[] }) => {
             ) : (
                 <>
                     {messageList.map((msgs, key) => {
+                        console.log(msgs);
                         const side = msgs[0].accountAddress === address ? "right" : "left";
                         const name = msgs[0].account.name;
                         const shortAddress = shortenAddress(
-                            msgs[0].accountAddress.toLowerCase(),
+                            msgs[0].accountAddress?.toLowerCase(),
                             3,
                         );
+                        const imgUrl =
+                            location.protocol +
+                            "//" +
+                            location.host +
+                            getRandomProfileImage(msgs[0].accountAddress);
                         return (
                             <Grid position={"relative"}>
                                 {side === "left" ? (
@@ -83,7 +89,7 @@ export const MessageList = ({ messages }: { messages: IMessage[] }) => {
                                 ) : null}
 
                                 <ChatMsg
-                                    avatar={<Avatar alt={name} src={name} />}
+                                    avatar={imgUrl || name || shortAddress}
                                     side={side}
                                     messages={msgs.map((m) => {
                                         const {

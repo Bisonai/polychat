@@ -28,9 +28,9 @@ import { useQueryClient } from "react-query";
 
 export const HomeTemplate = (): ReactElement => {
     const { isConnected, address } = useAccount();
-    const [stateAddress, setStateAddress] = useState<string>();
-    const [account, setAccount] = useState<IAccount>();
-    const [listOfPrice, setListOfPrice] = useState();
+    const [stateAddress, setStateAddress] = useState<string>("");
+    const [account, setAccount] = useState<IAccount>(null);
+    const [listOfPrice, setListOfPrice] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     const [editName, setEditName] = useState<boolean>(false);
     const [openQRModal, setOpenQRModal] = useState<boolean>(false);
@@ -60,7 +60,7 @@ export const HomeTemplate = (): ReactElement => {
         p: 4,
     };
 
-    const requestNativeTokensQuery = useQuery(["NativeTokens", address], {
+    const requestNativeTokensQuery = useQuery(["NativeTokens", address || ""], {
         queryFn: async () => {
             if (address) {
                 const nativeBal = await Moralis.EvmApi.balance.getNativeBalance({
@@ -76,7 +76,7 @@ export const HomeTemplate = (): ReactElement => {
                     symbol: EvmChain.MUMBAI.currency.symbol,
                     quantity: quantity,
                     valueInUSD: getTokenPriceInUSD(
-                        listOfPrice,
+                        listOfPrice || [],
                         quantity,
                         EvmChain.MUMBAI.currency.symbol,
                     ).toFixed(4),
@@ -90,9 +90,12 @@ export const HomeTemplate = (): ReactElement => {
                 return nativeBalance || {};
             }
         },
+        select: (data) => {
+            return data || {};
+        },
     });
 
-    const requestERC20TokensQuery = useQuery(["ERC20Tokens", address], {
+    const requestERC20TokensQuery = useQuery(["ERC20Tokens", address || ""], {
         queryFn: async () => {
             if (address) {
                 const ERC20Tokens = await Moralis.EvmApi.token.getWalletTokenBalances({
@@ -108,7 +111,7 @@ export const HomeTemplate = (): ReactElement => {
                         symbol: erc20.token.symbol,
                         quantity: quantity,
                         valueInUSD: getTokenPriceInUSD(
-                            listOfPrice,
+                            listOfPrice || [],
                             quantity,
                             erc20.token.symbol,
                         ).toFixed(4),
@@ -118,6 +121,9 @@ export const HomeTemplate = (): ReactElement => {
 
                 return ERC20Balances || [];
             }
+        },
+        select: (data) => {
+            return data || [];
         },
     });
 
@@ -339,7 +345,7 @@ export const HomeTemplate = (): ReactElement => {
     useEffect(() => {
         requestNativeTokensQuery.refetch();
         requestERC20TokensQuery.refetch();
-    }, listOfPrice);
+    }, [listOfPrice]);
 
     useEffect(() => {
         if (isConnected) {
@@ -387,7 +393,7 @@ export const HomeTemplate = (): ReactElement => {
                     <QRCode
                         size={256}
                         style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                        value={address}
+                        value={address || ""}
                         viewBox={`0 0 256 256`}
                     />
                 </Box>

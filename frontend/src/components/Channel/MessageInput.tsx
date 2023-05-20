@@ -45,7 +45,7 @@ import { IAccount, IMessageType } from "@src/types";
 import { Connector, useAccount, useBalance, useQuery } from "wagmi";
 import Moralis from "moralis";
 import { Erc20Token, Erc20Value, EvmChain, EvmNft } from "moralis/common-evm-utils";
-import { sendNFT, sendToken, shortenAddress } from "@src/lib/utils";
+import { getRandomProfileImage, sendNFT, sendToken, shortenAddress } from "@src/lib/utils";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { usePublicClient, useWalletClient } from "wagmi";
 import Image from "next/image";
@@ -66,7 +66,7 @@ export default function MessageInput({
     const [text, setText] = React.useState("");
     const [loading, setLoading] = React.useState(false);
 
-    const accountId = members?.find((m) => m.address.toLowerCase() === address.toLowerCase())?.id;
+    const accountId = members?.find((m) => m.address?.toLowerCase() === address?.toLowerCase())?.id;
     const handleSendMessage = async () => {
         if (text.toString().trim() === "") {
             return;
@@ -333,7 +333,7 @@ export const SendStepper = ({
                 {step === 0 && (
                     <UserList
                         members={members.filter(
-                            (m) => m.address.toLowerCase() !== address.toLowerCase(),
+                            (m) => m.address?.toLowerCase() !== address?.toLowerCase(),
                         )}
                         onSelect={(value) => {
                             setSelectedUser(value);
@@ -449,7 +449,7 @@ export const UserList = ({
                 <ListItem key={key} onClick={() => onSelect(member.address)} disablePadding>
                     <ListItemButton>
                         <ListItemAvatar>
-                            <Avatar alt={member.name} src={member.name} />
+                            <Avatar alt={member.name} src={getRandomProfileImage(member.address)} />
                         </ListItemAvatar>
                         <ListItemText
                             primary={<Typography>{member.name}</Typography>}
@@ -641,7 +641,7 @@ export const TokenList = ({
                         >
                             <ListItemButton>
                                 <ListItemAvatar>
-                                    <Avatar alt={"ETH"} src={balanceQuery?.data?.symbol} />
+                                    <Avatar alt={"MATIC"} src={balanceQuery?.data?.symbol} />
                                 </ListItemAvatar>
                                 <ListItemText
                                     primary={

@@ -9,15 +9,11 @@ const nextConfig = {
         allowMiddlewareResponseBody: true,
     },
     publicRuntimeConfig: {
-        NEXT_PUBLIC_INFURA_KEY: process.env?.NEXT_PUBLIC_INFURA_KEY,
-        NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env?.NEXT_PUBLIC_GOOGLE_ANALYTICS,
-        NEXT_PUBLIC_CHAIN_ID: process.env?.NEXT_PUBLIC_CHAIN_ID,
+        NEXT_PUBLIC_MORALIS_API_KEY: process.env?.NEXT_PUBLIC_MORALIS_API_KEY,
+        NEXT_PUBLIC_BE_URL: process.env?.NEXT_PUBLIC_BE_URL,
     },
     serverRuntimeConfig: {
-        AWS_ACCESS_KEY_ID: process.env?.AWS_ACCESS_KEY_ID,
-        AWS_SECRET_ACCESS_KEY: process.env?.AWS_SECRET_ACCESS_KEY,
-        AWS_REGION: process.env?.AWS_REGION,
-        DATABASE_URL: process.env?.DATABASE_URL,
+        COINMARKETCAP_KEY: process.env?.COINMARKETCAP_KEY,
     },
 };
 
