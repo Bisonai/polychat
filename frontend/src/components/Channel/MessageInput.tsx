@@ -584,7 +584,7 @@ export const TokenList = ({
         onSelect(selectedToken.token, amount);
     };
     const disabled =
-        selectedToken === null ||
+        !selectedToken ||
         !amount ||
         amount <= BigInt(0) ||
         amount > Number(formatUnits(selectedToken.amount.toBigInt()));
@@ -688,11 +688,13 @@ export const TokenList = ({
                                                 <>
                                                     <Typography>{token.name}</Typography>
                                                     <Typography>
-                                                        {parseFloat(
-                                                            formatUnits(
-                                                                erc20Value.amount.toBigInt(),
-                                                            ),
-                                                        ).toFixed(3)}{" "}
+                                                        {!erc20Value?.amount
+                                                            ? "0"
+                                                            : parseFloat(
+                                                                  formatUnits(
+                                                                      erc20Value.amount.toBigInt(),
+                                                                  ),
+                                                              ).toFixed(3)}{" "}
                                                         {token.symbol}
                                                     </Typography>
                                                 </>

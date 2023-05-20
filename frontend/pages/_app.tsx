@@ -1,7 +1,6 @@
 import React from "react";
 import Head from "next/head";
 import type { AppProps } from "next/app";
-import { ThemeProvider } from "styled-components";
 import GlobalStyle from "@styles/globalStyle";
 import theme from "@src/styles/theme";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -16,6 +15,7 @@ import { connecters } from "@src/lib/utils";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Moralis from "moralis";
 import getConfig from "next/config";
+import { createTheme, Theme, ThemeProvider } from "@mui/material/styles";
 const { publicRuntimeConfig } = getConfig();
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
@@ -52,12 +52,29 @@ const queryClient = new QueryClient({
         },
     },
 });
+
+const muiTheme = createTheme({
+    palette: {
+        primary: {
+            main: "#8839ec",
+            light: "#ebe3f4",
+            dark: "#8839ec",
+            contrastText: "#fff",
+        },
+        secondary: {
+            main: "#f0f1ff",
+            light: "#f0f1ff",
+            dark: "#ebe3f4",
+            contrastText: "#ebe3f4",
+        },
+    },
+});
 function MyApp(props: AppProps) {
     const { Component, pageProps } = props;
     const store = configureStore();
     return (
         <PersistGate loading={null} persistor={(store as any).__PERSISTOR}>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={(theme: Theme) => ({ ...muiTheme })}>
                 <QueryClientProvider client={queryClient}>
                     <WagmiConfig config={config}>
                         <GlobalStyle />

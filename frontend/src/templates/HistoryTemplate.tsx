@@ -1,9 +1,10 @@
 import { HistoryCard } from "@components/History/HistoryCard";
-import { Grid, Skeleton } from "@mui/material";
+import { Box, Grid, Skeleton, Typography } from "@mui/material";
 import Moralis from "moralis";
 import React from "react";
 import { ReactElement } from "react";
 import { useAccount, useQuery } from "wagmi";
+
 export const HistoryTemplate = (): ReactElement => {
     const { address } = useAccount();
     const transactionsQuery = useQuery(["transactions"], {
@@ -28,14 +29,24 @@ export const HistoryTemplate = (): ReactElement => {
         <Grid p={2} display="flex" flexDirection={"column"} gap={"16px"}>
             {showLoading ? (
                 Array.from(Array(5).keys()).map((i, k) => {
-                    return <Skeleton key={k} height={"105px"} width="100%" />;
+                    return <Skeleton key={k} height={"90px"} width="100%" variant="rectangular" />;
                 })
             ) : data.length > 0 ? (
                 data.map((transaction) => {
                     return <HistoryCard transaction={transaction} />;
                 })
             ) : (
-                <div>No transactions</div>
+                <Box width={"100%"} height={"100%"} marginTop={12} textAlign={"center"}>
+                    <img
+                        src="/images/warning.svg"
+                        alt="empty"
+                        style={{ width: "100%", maxWidth: "200px" }}
+                        height={"auto"}
+                    />
+                    <Typography variant={"h6"} align="center" color={"#d4d4d8"}>
+                        No transactions found
+                    </Typography>
+                </Box>
             )}
         </Grid>
     );

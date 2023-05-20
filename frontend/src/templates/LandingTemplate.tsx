@@ -47,10 +47,23 @@ export const LandingTemplate = () => {
             >
                 {activeStep === 0 && (
                     <>
-                        <Typography variant="h3" fontWeight={700}>
-                            CINDER
+                        <Typography variant="h3" fontWeight={700} align="center">
+                            <img
+                                src={"/images/landing-logo.png"}
+                                alt={"logo"}
+                                width={"50%"}
+                                style={{ minWidth: "250px" }}
+                            />
                         </Typography>
-                        <Typography variant="h5">Decentralized Social Media</Typography>
+                        <Typography
+                            pt={2}
+                            variant="h5"
+                            color={"#8839ec"}
+                            fontSize={"18px"}
+                            fontWeight={600}
+                        >
+                            Preference-based Messenger
+                        </Typography>
                     </>
                 )}
                 {activeStep === 1 && (
@@ -68,6 +81,14 @@ export const LandingTemplate = () => {
                             sx={{ height: "56px", borderRadius: "8px" }}
                             onClick={() => handleSelectWallet("Metamask")}
                             fullWidth
+                            startIcon={
+                                <img
+                                    src={"/images/metamask.webp"}
+                                    alt={"metamask"}
+                                    width={"24px"}
+                                    height={"24px"}
+                                />
+                            }
                         >
                             Metamask
                         </Button>
@@ -78,6 +99,14 @@ export const LandingTemplate = () => {
                             sx={{ height: "56px", borderRadius: "8px" }}
                             onClick={() => handleSelectWallet("Coinbase")}
                             fullWidth
+                            startIcon={
+                                <img
+                                    src={"/images/coinbase.png"}
+                                    alt={"coinbase"}
+                                    width={"24px"}
+                                    height={"24px"}
+                                />
+                            }
                         >
                             Coinbase
                         </Button>

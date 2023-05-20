@@ -1,4 +1,4 @@
-## Glitch POLYCHAT API 
+## Glitch PolyChat API 
 
 <br/>
 The PolyChat API is basically made for a private connection that is used in the app. As a simple feature, we implemented the chat through CRUD and SSE to show in the chat. For the correctness of the event handling, it is made to be processed after it is stored in the database through pg notify. Later, depending on the resource situation, you can change to WS to handle it.
