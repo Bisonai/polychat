@@ -1,6 +1,5 @@
 //SPDX-License-Identifier: BUSL
 pragma solidity ^0.8.16;
-import "hardhat/console.sol";
 
 contract FactoryAdRevenueSharing {
     address public immutable operator;
@@ -41,7 +40,6 @@ contract FactoryAdRevenueSharing {
 
         feeBalance += _operatorFee;
         uint256 left = msg.value - _operatorFee;
-        console.log("toBlockTimestamp_:", toBlockTimestamp_);
         ad.launchCampaign{value: left}(toBlockTimestamp_);
     }
 
@@ -98,7 +96,6 @@ contract AdRevenueShare {
         fromBlockTimestamp = block.timestamp;
         toBlockTimestamp = toBlockTimestamp_;
         adCampaignBalance = msg.value;
-        console.log("fromBlockTimestamp:", fromBlockTimestamp);
     }
 
     function stake() public payable {
