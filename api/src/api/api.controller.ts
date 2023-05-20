@@ -15,6 +15,7 @@ import { IChannel, IChannelCreateDTO } from "./dto/channelDto";
 import { IMessage, IMessageCreateDto } from "./dto/messageDto";
 import { interval, Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import { add } from "mathjs";
 
 @Controller("/api")
 export class ApiController {
@@ -71,6 +72,14 @@ export class ApiController {
   async getChannelMessages(@Param("id") id: number): Promise<IMessage[]> {
     return await this.apiService.getAllChannelMessage(id);
   }
+
+  @Get("/account/:address")
+  @ApiOperation({ operationId: "getAllList" })
+  @ApiBadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async getAccountByAddress(@Param("address") address: string): Promise<IAccount> {
+    return await this.apiService.findOneAccount(address);
+  }  
 }
 
 

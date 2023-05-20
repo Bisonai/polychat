@@ -14,11 +14,10 @@ export class ApiService {
 
   async createAccount(_accountCreateDto: IAccountCreateDto): Promise<IAccount> {
     const { address, name } = _accountCreateDto;
- 
     const res = await this.prisma.accounts.upsert({
       where: { address },
       create: { address, name },
-      update: { name }
+      update: { name, updated_at: new Date() }
     });
 
     const account: IAccount = {
@@ -181,5 +180,22 @@ export class ApiService {
       })
     );
     return data;
+  }
+
+  async findOneAccount(address:string): Promise<IAccount>{
+    const res = await this.prisma.accounts.findFirst({ where: { address } })
+    if (!res) {
+      // Handle the case where the account is not found
+      throw new Error('Account not found');
+    }
+    const account: IAccount = {
+      id: res.id,
+      address: res.address,
+      name: res.name,
+      createdAt: res.created_at,
+      updatedAt: res.updated_at,
+    };
+    return account;
+    
   }
 }
