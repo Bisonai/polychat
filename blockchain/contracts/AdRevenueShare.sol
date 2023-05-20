@@ -120,7 +120,7 @@ contract AdRevenueShare {
         // check if contract has sufficient balance
         require(_balance >= _reward);
 
-        bool sent = payable(msg.sender).send(_reward);
+        (bool sent, ) = payable(msg.sender).call{value: _reward}("");
         if (!sent) {
             revert FailedToUnstake();
         }
