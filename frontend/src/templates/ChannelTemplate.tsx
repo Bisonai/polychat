@@ -20,7 +20,7 @@ export const ChannelTemplate = ({ channelId }: { channelId: string }): ReactElem
     const allChannels = channelQuery?.data || [];
     const currentChannel = allChannels.find((channel) => channel.id.toString() == channelId);
     const messages = messageQuery?.data || [];
-    const members = currentChannel.members;
+    const members = currentChannel?.members || [];
     useEffect(() => {
         if (channelId) {
             if (window?.messageEvent) {
