@@ -273,7 +273,10 @@ export const SendStepper = ({
                             message: "",
                             accountId,
                             accountAddress: address,
-                            contractAddress: selectedNFT.tokenAddress.toJSON(),
+                            contractAddress:
+                                typeof selectedNFT.tokenAddress === "string"
+                                    ? selectedNFT.tokenAddress
+                                    : selectedNFT.tokenAddress.toJSON(),
                             messageType: IMessageType.nft,
                             txHash: receipt.transactionHash,
                             tokenValue: undefined,

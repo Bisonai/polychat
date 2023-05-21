@@ -199,24 +199,28 @@ export default function NFTTransferCard({
         if (nftTokenUri && nftTokenUri != "0") {
             setNFTMetadata(nftTokenUri);
         } else {
-            Moralis.EvmApi.nft
-                .reSyncMetadata({
-                    chain: EvmChain.MUMBAI,
-                    address: contractAddress,
-                    tokenId: tokenId,
-                })
-                .then((res) => {
-                    Moralis.EvmApi.nft
-                        .getMultipleNFTs({
-                            chain: EvmChain.MUMBAI,
-                            tokens: [{ tokenAddress: contractAddress, tokenId: tokenId }],
-                        })
-                        .then((res) => {
-                            if (res?.result?.length) {
-                                setMetadata(res?.result[0]?.metadata);
-                            }
-                        });
-                });
+            try {
+                Moralis.EvmApi.nft
+                    .reSyncMetadata({
+                        chain: EvmChain.MUMBAI,
+                        address: contractAddress,
+                        tokenId: tokenId,
+                    })
+                    .then((res) => {
+                        Moralis.EvmApi.nft
+                            .getMultipleNFTs({
+                                chain: EvmChain.MUMBAI,
+                                tokens: [{ tokenAddress: contractAddress, tokenId: tokenId }],
+                            })
+                            .then((res) => {
+                                if (res?.result?.length) {
+                                    setMetadata(res?.result[0]?.metadata);
+                                }
+                            });
+                    });
+            } catch (error) {
+                console.log("error", error);
+            }
         }
     }, []);
     const image =
@@ -262,16 +266,23 @@ export const TokenTransferCard = ({
 }) => {
     const [metadata, setMetadata] = React.useState<any>({});
     useEffect(() => {
-        Moralis.EvmApi.token
-            .getTokenMetadata({
-                chain: EvmChain.MUMBAI,
-                addresses: [contractAddress],
-            })
-            .then((res) => {
-                if (res?.raw?.length) {
-                    setMetadata(res.raw[0]);
-                }
-            });
+        try {
+            Moralis.EvmApi.token
+                .getTokenMetadata({
+                    chain: EvmChain.MUMBAI,
+                    addresses: [contractAddress],
+                })
+                .then((res) => {
+                    if (res?.raw?.length) {
+                        setMetadata(res.raw[0]);
+                    }
+                })
+                .catch((err) => {
+                    console.log("err", err);
+                });
+        } catch (error) {
+            console.log("error", error);
+        }
     }, []);
     return (
         <Card sx={{ width: 200 }}>
