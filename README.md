@@ -1,4 +1,4 @@
-# PolyChat
+# polyCHAT
 
 polyCHAT is an innovative preference-based messenger designed to foster meaningful conversations within a secure and protected environment. This is made possible through the implementation of Polygon ID, an advanced technology that ensures users have a safe and private identity.
 
