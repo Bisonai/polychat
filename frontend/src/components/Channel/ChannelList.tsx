@@ -63,7 +63,7 @@ export default function ChannelList({
                             <ListItemText
                                 primary={chatList.channelName || "No name"}
                                 secondary={
-                                    <Grid container>
+                                    <Grid container justifyContent={"space-between"}>
                                         <Box textOverflow={"ellipsis"} display={"flex"}>
                                             <Typography
                                                 sx={{ display: "inline-block" }}

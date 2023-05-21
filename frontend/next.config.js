@@ -15,7 +15,7 @@ const nextConfig = {
         COINMARKETCAP_KEY: "80edf3ae-f2a6-4b84-898b-23183a6571c9",
     },
     serverRuntimeConfig: {
-        COINMARKETCAP_KEY: "bbf97f97-5dce-411c-80b4-29149f2e3423",
+        COINMARKETCAP_KEY: "80edf3ae-f2a6-4b84-898b-23183a6571c9",
     },
 };
 
